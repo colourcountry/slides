@@ -10,12 +10,21 @@ Include Slide IDs as inlines but don't display by default (CSS)
 'Smart' unrolling
     - unrolls whole generations, until unrolling again would break the limit
 Line count limit at /slide/<name>?lines=8. Error if will not fit in limit.
-Next rule
+Next link
     - Stay on same page/slide, focus traverses tree
+Prev link as next
+In link for ununrolled slides
 ---
-'Smart' next rule with too much recapping
-    - After focus reaches an ununrolled slide, go to that slide with self focused
-    - At end of that slide, return to previous traversal
+Keyboard shortcuts:
+    - left arrow = prev
+    - down arrow = in
+    - right arrow = next
+    - space = in otherwise next
+Trace of parent pages (note focus should auto-next)
+Out link
+Keyboard shortcuts:
+    - up arrow = out
+    - space = in otherwise next otherwise out
 Splitting a slide across pages at /slide/<name>?page=2
     - split before unroll, may now be able to unroll further on individual slides
     - needs more thought :(

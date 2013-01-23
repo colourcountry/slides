@@ -9,6 +9,10 @@ class OutOfSpaceException(Exception):
     pass
 
 class Slide:
+    FOCUSNOTFOUND = 0
+    FOCUSFOUND = 1
+    FOCUSUNROLLED = 2
+
     ALL={}
 
     @classmethod
@@ -98,20 +102,29 @@ class Slide:
         return '%s:%s:%s' % (self.id, self.shortName, self.niceName)
 
 
-    def html(self, unroll=None, focus=None, css=None, lines=None):
+    def html(self, unroll=None, focus=None, css=None, lines=None, trace=None):
         queries = []
         if css: queries.append('css='+css)
         if lines: queries.append('lines='+str(lines))
 
         html, prev, next, pastFocus = self._html('div', 1, unroll, focus, css, lines, queries)
 
-        if not pastFocus:
+        if pastFocus == Slide.FOCUSNOTFOUND:
             # didn't find a focus, "next" will focus the root
             next = self
-
-        prevLink = (prev and ('<a href="%s">Back</a>' % self.getLink(focus=prev.id,queries=queries))) or 'First slide'
-        nextLink = (next and ('<a href="%s">Next</a>' % self.getLink(focus=next.id,queries=queries))) or 'Last slide'
-        links = '<div class="links">%s %s</div>' % (prevLink, nextLink)
+            prevLink = ''
+            inLink = ''
+            nextLink = (next and ('<a href="%s">Next</a>' % self.getLink(focus=next.id,queries=queries))) or 'Last slide'
+        elif pastFocus == Slide.FOCUSUNROLLED:
+            prevLink = (prev and ('<a href="%s">Back</a>' % self.getLink(focus=prev.id,queries=queries))) or 'First slide'
+            inLink = ''
+            nextLink = (next and ('<a href="%s">Next</a>' % self.getLink(focus=next.id,queries=queries))) or 'Last slide'
+        else:
+            # focus not unrolled, go into
+            prevLink = (prev and ('<a href="%s">Back</a>' % self.getLink(focus=prev.id,queries=queries))) or 'First slide'
+            inLink = '<a href="%s">In</a>' % pastFocus.getLink(focus=pastFocus.id,queries=queries)
+            nextLink = (next and ('<a href="%s">Skip</a>' % self.getLink(focus=next.id,queries=queries))) or 'Last slide'
+        links = '<div class="links">%s | %s | %s</div>' % (prevLink, inLink, nextLink)
 
         return links+html
         
@@ -124,8 +137,9 @@ class Slide:
         queries = '?'+'&'.join(queries+focusQuery)
         return (self.shortName or self.id) + (queries or '')
 
-    def _html(self, element, level, unroll=None, focus=None, css=None, lines=None, queries=None, prev=None, next=None, pastFocus=False):
-        print("Rendering %s at level %s with unroll %s, lines %s" % (self.name, level, unroll, lines))
+    def _html(self, element, level, unroll=None, focus=None, css=None, lines=None, queries=None, prev=None, next=None, pastFocus=None):
+
+        print("Rendering %s at level %s with unroll %s, lines %s" % (self, level, unroll, lines))
 
         div = '<%s id="%s">' % (element, self.id)
 
@@ -149,13 +163,17 @@ class Slide:
 </h%d>''' % (level, focusAttr, ids, link, self.niceName, level)
 
 
-        if pastFocus:
-            if next is None: next = self
-        else:
-            if focused:
-                pastFocus = True
-            else:
+        if pastFocus is None:
+            pastFocus = Slide.FOCUSNOTFOUND
+
+        if not focused:
+            if pastFocus == Slide.FOCUSNOTFOUND:
+                print('Setting prev to %s' % self)
                 prev = self
+            else:
+                if next is None:
+                    print('Setting next to %s (%s)' % (self, pastFocus))
+                    next = self
 
         content = ''
         if self.content:
@@ -184,11 +202,24 @@ class Slide:
                 unroll = 0
 
             if unroll > 0:
+                if focused:
+                    print("Found unrolled focus at %s" % self)
+                    pastFocus = Slide.FOCUSUNROLLED
+
                 content = '<ul>'
                 for slide in self.content:
                     html, prev, next, pastFocus = slide._html('li', level+1, unroll, focus, css, None, queries, prev, next, pastFocus)
                     content += html
                 content += '</ul>'
+
+            elif focused:
+                # the focused entry has not been unrolled.
+                print("Found focus at %s" % self)
+                pastFocus = self
+
+        elif focused:
+            # the focused entry has no children.
+            pastFocus = Slide.FOCUSUNROLLED
 
         html = div + heading + content + ('</%s>' % element)
 
