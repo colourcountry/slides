@@ -102,22 +102,41 @@ class Slide:
         queries = []
         if css: queries.append('css='+css)
         if lines: queries.append('lines='+str(lines))
-        queries = '?'+'&'.join(queries)
 
-        return self._html('div', 1, unroll, focus, css, lines, queries)
+        html, prev, next, pastFocus = self._html('div', 1, unroll, focus, css, lines, queries)
 
-    def _html(self, element, level, unroll=None, focus=None, css=None, lines=None, queries=None):
+        if not pastFocus:
+            # didn't find a focus, "next" will focus the root
+            next = self
+
+        prevLink = (prev and ('<a href="%s">Back</a>' % self.getLink(focus=prev.id,queries=queries))) or 'First slide'
+        nextLink = (next and ('<a href="%s">Next</a>' % self.getLink(focus=next.id,queries=queries))) or 'Last slide'
+        links = '<div class="links">%s %s</div>' % (prevLink, nextLink)
+
+        return links+html
+        
+    def getLink(self, focus=None, queries=None):
+        if focus is None:
+            focus = self.id
+        focusQuery = ['focus='+focus]
+        if queries is None:
+            queries = []
+        queries = '?'+'&'.join(queries+focusQuery)
+        return (self.shortName or self.id) + (queries or '')
+
+    def _html(self, element, level, unroll=None, focus=None, css=None, lines=None, queries=None, prev=None, next=None, pastFocus=False):
         print("Rendering %s at level %s with unroll %s, lines %s" % (self.name, level, unroll, lines))
 
         div = '<%s id="%s">' % (element, self.id)
 
-        if self.id == focus or self.name == focus:
+        focused = (self.id == focus or self.name == focus)
+
+        if focused:
             focusAttr = 'class="focus"'
         else:
             focusAttr = ''
 
-
-        link = (self.shortName or self.id) + (queries or '')
+        link = self.getLink(queries=queries)
 
         ids = '''
     <span class="id">%s</span>''' % self.id
@@ -130,36 +149,47 @@ class Slide:
 </h%d>''' % (level, focusAttr, ids, link, self.niceName, level)
 
 
+        if pastFocus:
+            if next is None: next = self
+        else:
+            if focused:
+                pastFocus = True
+            else:
+                prev = self
+
         content = ''
-        if self.content and (unroll is None or unroll>0):
+        if self.content:
             if lines is not None:
                 # find the unroll level which will fit in the specified number of lines
-                newUnroll = -1
+                unroll = -1
                 slidesToUnroll=[self]
                 while slidesToUnroll and len(slidesToUnroll) <= lines:
                     lines -= len(slidesToUnroll)
                     unrolled = []
                     for slide in slidesToUnroll:
                         unrolled.extend(slide.content)
-                    newUnroll += 1
+                    unroll += 1
                     slidesToUnroll = unrolled
 
-                if newUnroll == 0:
+                if unroll == 0:
                     # not enough space for immediate children, paging will be required
                     raise OutOfSpaceException
                     
 
             elif unroll is not None:
-                newUnroll = unroll-1
+                unroll -= 1
 
             else:
                 # if not told to unroll, don't
-                newUnroll = 0
+                unroll = 0
 
-            if newUnroll > 0:
+            if unroll > 0:
                 content = '<ul>'
                 for slide in self.content:
-                    content += slide._html('li', level+1, newUnroll, focus, css, None, queries)
+                    html, prev, next, pastFocus = slide._html('li', level+1, unroll, focus, css, None, queries, prev, next, pastFocus)
+                    content += html
                 content += '</ul>'
 
-        return div + heading + content + ('</%s>' % element)
+        html = div + heading + content + ('</%s>' % element)
+
+        return (html, prev, next, pastFocus)

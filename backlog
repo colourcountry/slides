@@ -10,9 +10,9 @@ Include Slide IDs as inlines but don't display by default (CSS)
 'Smart' unrolling
     - unrolls whole generations, until unrolling again would break the limit
 Line count limit at /slide/<name>?lines=8. Error if will not fit in limit.
----
 Next rule
     - Stay on same page/slide, focus traverses tree
+---
 'Smart' next rule with too much recapping
     - After focus reaches an ununrolled slide, go to that slide with self focused
     - At end of that slide, return to previous traversal

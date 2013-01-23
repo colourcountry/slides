@@ -78,4 +78,7 @@ Presentation
 End
 ''')
 
+    #thisSlide = slide.Slide.get('Presentation')
+    #print ( thisSlide.html( lines=10, focus='[15]' ) )
+
     bottle.run()
