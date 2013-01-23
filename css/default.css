@@ -1,0 +1,37 @@
+body    {
+            background-color: #224488;
+            color: white;
+            font-family: ubuntu;
+            font-weight: bold;
+            font-size: 200%;
+}
+
+a       {
+            color: inherit;
+            text-decoration: inherit;
+}
+
+div, li {
+            margin: 5px;
+}
+
+.focus  {
+            color: yellow;
+            background-color: #113366;
+}
+
+ul, li {
+            list-style-position: inside;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    display: inline;
+}
+
+.id     {
+            display: none;
+}
+
+.shortName  {
+                display: none;
+}
