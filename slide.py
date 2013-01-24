@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 
-import os, sys, json, re
+import os, sys, json, re, urllib
 
 DEBUG = True
 ID = 0 
@@ -17,7 +17,13 @@ class Slide:
 
     @classmethod
     def get(c_lass, name, default=None):
-        return c_lass.ALL.get(name, default)
+        match = re.match('[[]([^]]+)[]](.*)', name)
+        if match:
+            # fullname (with shortname in brackets) specified
+            return c_lass.ALL.get(match.group(1), default)
+        else:
+            # shortname or id specified
+            return c_lass.ALL.get(name, default)
 
     @classmethod
     def getId(c_lass):
@@ -33,7 +39,11 @@ class Slide:
             newIndent = len(line) - len(line.lstrip())
             line = line.strip()
             if line:
-                newSlide = Slide.get(line, None) or Slide(name=line)
+                match = re.match('[[]([^]]+)[]](.*)', line)
+                if match:
+                    newSlide = Slide.get(match.group(1), None) or Slide(name=line)
+                else:
+                    newSlide = Slide(name=line)
                 if not curSlides:
                     firstSlide = newSlide
                     curSlides.append(newSlide)
@@ -55,17 +65,14 @@ class Slide:
     def __init__(self, **defn):
         self.setName( defn.get('name', 'Presentation') )
         self.content = []
-        self.id = '['+self.__class__.getId()+']'
+        self.id = self.__class__.getId()
         self.__class__.ALL[self.id] = self
 
     def setName(self, name):
-        if name in self.__class__.ALL:
-            raise ValueError('Slide %s already exists' % name)
-
-        match = re.match('([[][^]]+[]])(.*)', name)
+        match = re.match('[[]([^]]+)[]](.*)', name)
         if match:
             shortName = match.group(1)
-            if re.match('[[][0-9]+[]]',shortName):
+            if re.match('[0-9]+$',shortName):
                 # Illegal shortname as contains only numbers
                 niceName = name
                 shortName = None
@@ -77,13 +84,8 @@ class Slide:
             niceName = name
             shortName = None
 
-        if hasattr(self, 'name'):
-            self.__class__.ALL.pop(self.name)
         if hasattr(self, 'shortName'):
             self.__class__.ALL.pop(self.shortName)
-
-        self.name = name
-        self.__class__.ALL[name] = self
 
         if shortName:
             self.shortName = shortName
@@ -92,6 +94,7 @@ class Slide:
             self.shortName = None
 
         self.niceName = niceName
+        self.name = name
 
     def add(self, slide):
         if not isinstance(slide, Slide):
@@ -107,50 +110,101 @@ class Slide:
         if css: queries.append('css='+css)
         if lines: queries.append('lines='+str(lines))
 
-        html, prev, next, pastFocus = self._html('div', 1, unroll, focus, css, lines, queries)
+        # trace for clickable links: add link back here
+        thisTrace = self.getLink(focus=self.id,queries=queries)
+        if trace:
+            trace = urllib.parse.unquote(trace)
+            thisTrace = '%s,%s' % (trace, thisTrace)
+
+            if ',' in trace:
+                oldTrace, latestTrace = trace.rsplit(',',1)
+                if '?' in latestTrace:
+                    outTrace = '%s&trace=%s' % (latestTrace,urllib.parse.quote(urllib.parse.quote(oldTrace)))
+                else:
+                    outTrace = '%s?trace=%s' % (latestTrace,urllib.parse.quote(urllib.parse.quote(oldTrace)))
+            else:
+                outTrace = trace
+
+            outLink = '<a id="outLink" href="%s">Out</a>' % outTrace
+        else:
+            outLink = ''
+            outTrace = None
+
+
+        html, prev, next, pastFocus = self._html('div', 1, unroll, focus, css, lines, thisTrace, queries)
 
         if pastFocus == Slide.FOCUSNOTFOUND:
             # didn't find a focus, "next" will focus the root
             next = self
             prevLink = ''
             inLink = ''
-            nextLink = (next and ('<a href="%s">Next</a>' % self.getLink(focus=next.id,queries=queries))) or 'Last slide'
+            # trace for next/prev: no change
+            nextLink = (next and ('<a id="nextLink" href="%s">Next</a>' % self.getLink(focus=next.id,trace=trace,queries=queries))) or 'Last slide'
         elif pastFocus == Slide.FOCUSUNROLLED:
-            prevLink = (prev and ('<a href="%s">Back</a>' % self.getLink(focus=prev.id,queries=queries))) or 'First slide'
+            prevLink = (prev and ('<a id="prevLink" href="%s">Back</a>' % self.getLink(focus=prev.id,trace=trace,queries=queries))) or 'First slide'
             inLink = ''
-            nextLink = (next and ('<a href="%s">Next</a>' % self.getLink(focus=next.id,queries=queries))) or 'Last slide'
+            nextLink = (next and ('<a id="nextLink" href="%s">Next</a>' % self.getLink(focus=next.id,trace=trace,queries=queries))) or 'Last slide'
         else:
             # focus not unrolled, go into
-            prevLink = (prev and ('<a href="%s">Back</a>' % self.getLink(focus=prev.id,queries=queries))) or 'First slide'
-            inLink = '<a href="%s">In</a>' % pastFocus.getLink(focus=pastFocus.id,queries=queries)
-            nextLink = (next and ('<a href="%s">Skip</a>' % self.getLink(focus=next.id,queries=queries))) or 'Last slide'
-        links = '<div class="links">%s | %s | %s</div>' % (prevLink, inLink, nextLink)
+            prevLink = (prev and ('<a id="prevLink" href="%s">Back</a>' % self.getLink(focus=prev.id,trace=trace,queries=queries))) or 'First slide'
+
+            # trace for in: add next, unless there isn't one, in which case replace with current trace, unless, give up and add self
+            if next:
+                nextTrace = self.getLink(focus=next.id,queries=queries)
+                if trace:
+                    nextTrace = '%s,%s' % (trace, nextTrace)
+            elif trace:
+                nextTrace = trace
+            else:
+                nextTrace = thisTrace
+
+            #print( str(next and self.getLink(focus=next.id,queries=queries)) +" "+str(trace)+" "+str(thisTrace) )
+
+            inLink = '<a id="inLink" href="%s">In</a>' % pastFocus.getLink(focus=pastFocus.id,trace=nextTrace,queries=queries)
+
+            nextLink = (next and ('<a id="nextLink" href="%s">Skip</a>' % self.getLink(focus=next.id,trace=trace,queries=queries))) or 'Last slide'
+
+        links = '<div class="links">%s | %s | %s | %s</div>' % (prevLink, inLink, outLink, nextLink)
 
         return links+html
         
-    def getLink(self, focus=None, queries=None):
+    def getLink(self, focus=None, trace=None, queries=None):
         if focus is None:
             focus = self.id
         focusQuery = ['focus='+focus]
+
+        if trace is None:
+            traceQuery = []
+        else:
+            traceQuery = ['trace='+urllib.parse.quote(urllib.parse.quote(trace))]
+
         if queries is None:
             queries = []
-        queries = '?'+'&'.join(queries+focusQuery)
+        queries = '?'+'&'.join(queries+focusQuery+traceQuery)
+
         return (self.shortName or self.id) + (queries or '')
 
-    def _html(self, element, level, unroll=None, focus=None, css=None, lines=None, queries=None, prev=None, next=None, pastFocus=None):
+    def _html(self, element, level, unroll=None, focus=None, css=None, lines=None, trace=None, queries=None, prev=None, next=None, pastFocus=None):
 
-        print("Rendering %s at level %s with unroll %s, lines %s" % (self, level, unroll, lines))
+        #print("Rendering %s at level %s with unroll %s, lines %s" % (self, level, unroll, lines))
 
-        div = '<%s id="%s">' % (element, self.id)
+        focused = (self.id == focus or self.shortName == focus)
 
-        focused = (self.id == focus or self.name == focus)
+        classAttr = ''
 
         if focused:
-            focusAttr = 'class="focus"'
-        else:
-            focusAttr = ''
+            classAttr += 'focus'
 
-        link = self.getLink(queries=queries)
+        if self.content:
+            classAttr += ' content'
+
+        if classAttr:
+            classAttr = 'class="%s"' % classAttr
+
+        div = '<%s %s id="%s">' % (element, classAttr, self.id)
+
+
+        link = self.getLink(trace=trace,queries=queries)
 
         ids = '''
     <span class="id">%s</span>''' % self.id
@@ -158,9 +212,8 @@ class Slide:
             ids += '''
     <span class="shortName">%s</span>''' % self.shortName
 
-        heading = '''<h%d %s>%s
-    <a href="%s">%s</a>
-</h%d>''' % (level, focusAttr, ids, link, self.niceName, level)
+        heading = '''    <div class="text">%s<a href="%s">%s</a></div>
+''' % (ids, link, self.niceName)
 
 
         if pastFocus is None:
@@ -168,11 +221,11 @@ class Slide:
 
         if not focused:
             if pastFocus == Slide.FOCUSNOTFOUND:
-                print('Setting prev to %s' % self)
+                #print('Setting prev to %s' % self)
                 prev = self
             else:
                 if next is None:
-                    print('Setting next to %s (%s)' % (self, pastFocus))
+                    #print('Setting next to %s (%s)' % (self, pastFocus))
                     next = self
 
         content = ''
@@ -203,18 +256,18 @@ class Slide:
 
             if unroll > 0:
                 if focused:
-                    print("Found unrolled focus at %s" % self)
+                    #print("Found unrolled focus at %s" % self)
                     pastFocus = Slide.FOCUSUNROLLED
 
                 content = '<ul>'
                 for slide in self.content:
-                    html, prev, next, pastFocus = slide._html('li', level+1, unroll, focus, css, None, queries, prev, next, pastFocus)
+                    html, prev, next, pastFocus = slide._html('li', level+1, unroll, focus, css, None, trace, queries, prev, next, pastFocus)
                     content += html
                 content += '</ul>'
 
             elif focused:
                 # the focused entry has not been unrolled.
-                print("Found focus at %s" % self)
+                #print("Found focus at %s" % self)
                 pastFocus = self
 
         elif focused:

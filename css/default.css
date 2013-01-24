@@ -1,9 +1,26 @@
-body    {
-            background-color: #224488;
+@import url(http://fonts.googleapis.com/css?family=Tangerine);
+
+
+body {
+            margin: 0;
+            padding: 0;
             color: white;
-            font-family: ubuntu;
-            font-weight: bold;
-            font-size: 200%;
+            font-family: 'Tangerine', serif;
+            font-size: 64pt;
+            background-color: #113366;
+}
+
+ul, li, div, p {
+            margin: 0;
+            padding: 4pt;
+}
+
+.links  {
+            font-family: ubuntu, sans-serif;
+            background-color: black;
+            font-size: 12pt;
+            position: absolute;
+            bottom: 0;
 }
 
 a       {
@@ -15,18 +32,52 @@ div, li {
             margin: 5px;
 }
 
-.focus  {
-            color: yellow;
-            background-color: #113366;
+ul {
+   list-style: none;
 }
 
-ul, li {
-            list-style-position: inside;
+li {
+        font-size: 48pt;
 }
 
-h1, h2, h3, h4, h5, h6 {
-    display: inline;
+li li {
+        font-size: 40pt;
+        padding-left: 10%;
 }
+
+li li li {
+        font-size: 36pt;
+}
+
+.text   {
+        padding-left: 10%;
+}
+
+div>.text {
+        border-bottom: 4px solid white;
+        padding: 20px;
+        padding-left: 10%;
+}
+
+.focus>.text  {
+        color: #ffff88;
+        background-color: #071433;
+        border-bottom-color: #ffff88;
+}
+
+li>.text:before {
+        content: "\2767";
+        padding: 0 15pt;
+        font-size: 80%;
+        font-weight: 200;
+}
+
+/* If a label has children, make it bold */
+
+.content>.text    {
+        font-weight: bold;
+}
+
 
 .id     {
             display: none;
@@ -35,3 +86,5 @@ h1, h2, h3, h4, h5, h6 {
 .shortName  {
                 display: none;
 }
+
+
