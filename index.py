@@ -11,6 +11,18 @@ sys.path.append(os.path.dirname(__file__))
 def css(path):
     return bottle.static_file(path, root='css')
 
+@bottle.route('/json/<name>')
+def getJson(name):
+    bottle.response.status = 200
+    bottle.response.content_type = 'application/json'
+
+    unroll = ((bottle.request.query.unroll!='') and int(bottle.request.query.unroll)) or None
+    indent = ((bottle.request.query.indent!='') and int(bottle.request.query.indent)) or None
+
+    thisSlide = slide.Slide.get(name)
+    return thisSlide.json( unroll=unroll, indent=indent )
+
+
 @bottle.route('/slide/<name>')
 def getSlide(name):
     bottle.response.status = 200
@@ -18,8 +30,8 @@ def getSlide(name):
     cssLink = bottle.request.query.css or '/css/default.css'
     head = '<link rel="stylesheet" href="%s"></link>' % cssLink
 
-    unroll = (bottle.request.query.unroll and int(bottle.request.query.unroll)) or None
-    lines = (bottle.request.query.lines and int(bottle.request.query.lines)) or None
+    unroll = ((bottle.request.query.unroll!='') and int(bottle.request.query.unroll)) or None
+    lines = ((bottle.request.query.lines!='') and int(bottle.request.query.lines)) or None
 
     thisSlide = slide.Slide.get(name)
     body =  thisSlide.html(  unroll=unroll,
@@ -79,7 +91,8 @@ init = function() {
 
 
 if __name__=='__main__':
-    slide.Slide.readText('''
+
+    TEST_TEXT='''
 Presentation
     A
     B
@@ -123,10 +136,53 @@ Presentation
         333
             [D]
 End
-''')
+'''
+
+    REGULAR_TEXT = '''
+Beer
+    Historical
+        Ale
+            No hops
+            Made by ale-wives or brewsters, mostly women
+            Generally weak, drunk as an alternative to water
+        Beer
+            Hopped (but not hoppy)
+            Concept brought in by Dutch brewers
+            Comparatively strong
+            Normally dark, before invention of pale malt and water treatment
+    Modern
+        Lager
+            The most popular style currently, over 1,000,000,0000,000,000000 pints brewed every year
+        Bitter
+            Originally known (as pale ale) The traditional English style, but suffers from an image problem
+            3.8 - 4.5 % (ESB and similar up to 6%)
+        IPA
+            In England practically the same as pale ale, but in America a much stronger, hoppier brew; now being re-imported into Britain by craft brewers and the like (especially Marble, Kernel, Partizan, etc)
+            The US is still the driver of the style
+        Stout and porter
+            Originally the same thing, porter died out (except for Fullers) but is now being experimented with by many brewers
+            Guinness Foreign Export Stout is a survival of pre-WWI strength
+        Minor styles
+            Wild fermentations
+                Especially in Belgium
+                Lambic---the pure stuff
+                Gueuze---a blend of old and young lambics
+                Flanders sour ales
+            Imperial X
+            Weissbier
+                Especially in Germany
+                Dunkles Weizen
+                Berliner Weisse
+            Barley wine
+            Top-fermented lager variants
+                Kölsch
+                Alt
+            Eisbock
+'''            
 
     #thisSlide = slide.Slide.get('1')
     #print (thisSlide, slide.Slide.ALL)
     #print ( thisSlide.html( lines=10, focus='15' ) )
 
+    slide.Slide.readText(REGULAR_TEXT)
     bottle.run()

@@ -27,10 +27,9 @@ Trace of parent pages on "in" link (note focus should auto-next)
 Trace of parent pages on clickable links (no need for auto-next)
 Out link
 Visual (CSS) cue to whether a slide has content
----
-Documentation!
 <<< 1.0
-
+Export Slide as JSON
+---
 Client side navigation - build a Slide from hardcoded JSON
 Client side navigation - click on a Slide to open it (everything fully unrolled, no asynch comms)
 Client side specific unroll level
@@ -38,6 +37,7 @@ Client side 'smart' unrolling
 Client side navigation - next/prev
 Client side navigation - in/out (still no asynch comms)
 Client side navigation - fetch Slide contents from server asynchronously if not available
+Documentation!
 Splitting a slide across pages at /slide/<name>?page=2
     - split before unroll, may now be able to unroll further on individual slides
     - is this necessary? needs more thought

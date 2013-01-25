@@ -105,6 +105,19 @@ class Slide:
         return '%s:%s:%s' % (self.id, self.shortName, self.niceName)
 
 
+    def json(self, unroll=None, indent=None):
+        return json.dumps(self.dict(unroll=unroll), indent=indent)
+
+    def dict(self, unroll=None):        
+        result = { 'id': self.id, 'nm': self.name }
+        if self.content:
+            if unroll is None:
+                result['ct'] = [child.dict() for child in self.content]
+            elif unroll>0:
+                result['ct'] = [child.dict(unroll=unroll-1) for child in self.content]
+        return result
+        
+
     def html(self, unroll=None, focus=None, css=None, lines=None, trace=None):
         queries = []
         if css: queries.append('css='+css)
