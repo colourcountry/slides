@@ -105,16 +105,28 @@ class Slide:
         return '%s:%s:%s' % (self.id, self.shortName, self.niceName)
 
 
-    def json(self, unroll=None, indent=None):
-        return json.dumps(self.dict(unroll=unroll), indent=indent)
+    def json(self, unroll=None, indent=None, separators=None):
+        if separators is None:
+            separators = (',', ':') # compact representation
+        return json.dumps(self.dict(unroll=unroll), indent=indent, separators=separators)
 
-    def dict(self, unroll=None):        
-        result = { 'id': self.id, 'nm': self.name }
+    def dict(self, unroll=None):
+        try:
+            theId = int(self.id)
+        except ValueError:
+            theId = self.id
+
+        result = { 'id': theId, 'n': self.name }
         if self.content:
             if unroll is None:
-                result['ct'] = [child.dict() for child in self.content]
+                result['c'] = [child.dict() for child in self.content]
             elif unroll>0:
-                result['ct'] = [child.dict(unroll=unroll-1) for child in self.content]
+                result['c'] = [child.dict(unroll=unroll-1) for child in self.content]
+            else:
+                pass # leave undefined
+        else:
+            # always let client know if a slide really is empty
+            result['c'] = []
         return result
         
 
@@ -184,7 +196,7 @@ class Slide:
     def getLink(self, focus=None, trace=None, queries=None):
         if focus is None:
             focus = self.id
-        focusQuery = ['focus='+focus]
+        focusQuery = ['focus=%s' % focus]
 
         if trace is None:
             traceQuery = []
@@ -203,13 +215,13 @@ class Slide:
 
         focused = (self.id == focus or self.shortName == focus)
 
-        classAttr = ''
+        classAttr = 'slide'
 
         if focused:
-            classAttr += 'focus'
+            classAttr += ' focus'
 
         if self.content:
-            classAttr += ' content'
+            classAttr += ' slide'
 
         if classAttr:
             classAttr = 'class="%s"' % classAttr
@@ -225,7 +237,7 @@ class Slide:
             ids += '''
     <span class="shortName">%s</span>''' % self.shortName
 
-        heading = '''    <div class="text">%s<a href="%s">%s</a></div>
+        heading = '''    <p>%s<a href="%s">%s</a></p>
 ''' % (ids, link, self.niceName)
 
 
@@ -272,11 +284,22 @@ class Slide:
                     #print("Found unrolled focus at %s" % self)
                     pastFocus = Slide.FOCUSUNROLLED
 
-                content = '<ul>'
+
+                if unroll > 1:
+                    content = ''
+                    subElement = 'section'
+                else:
+                    content = '<ul>'
+                    subElement = 'li'
+
                 for slide in self.content:
-                    html, prev, next, pastFocus = slide._html('li', level+1, unroll, focus, css, None, trace, queries, prev, next, pastFocus)
+                    html, prev, next, pastFocus = slide._html(subElement, level+1, unroll, focus, css, None, trace, queries, prev, next, pastFocus)
                     content += html
-                content += '</ul>'
+
+                if unroll > 1:
+                    pass
+                else:
+                    content += '</ul>'
 
             elif focused:
                 # the focused entry has not been unrolled.

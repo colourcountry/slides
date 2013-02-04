@@ -29,15 +29,21 @@ Out link
 Visual (CSS) cue to whether a slide has content
 <<< 1.0
 Export Slide as JSON
----
+Investigate deck.js (https://github.com/imakewebthings/deck.js)
+Make HTML output use deck.js
+Make IDs actual numbers in JSON representation (saves a few bytes)
+Allow custom separators per json module (saves a few bytes)
 Client side navigation - build a Slide from hardcoded JSON
 Client side navigation - click on a Slide to open it (everything fully unrolled, no asynch comms)
+Client side navigation - next/prev - comes free with deck.js
+---
 Client side specific unroll level
+Investigate how to do deck.js extensions
+Client side navigation - in/out (still no asynch comms) as a deck.js extension
 Client side 'smart' unrolling
-Client side navigation - next/prev
-Client side navigation - in/out (still no asynch comms)
 Client side navigation - fetch Slide contents from server asynchronously if not available
 Documentation!
+Client side navigation - true offline mode (inline CSS, dependencies, etc.)
 Splitting a slide across pages at /slide/<name>?page=2
     - split before unroll, may now be able to unroll further on individual slides
     - is this necessary? needs more thought
