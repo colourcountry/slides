@@ -36,30 +36,32 @@ Allow custom separators per json module (saves a few bytes)
 Client side navigation - build a Slide from hardcoded JSON
 Client side navigation - click on a Slide to open it (everything fully unrolled, no asynch comms)
 Client side navigation - next/prev - comes free with deck.js
----
-Client side specific unroll level
-Investigate how to do deck.js extensions
-Client side navigation - in/out (still no asynch comms) as a deck.js extension
-Client side 'smart' unrolling
+replace deck.js with dzslides
+Client side navigation - in (still no asynch comms)
+Client side navigation - out
+fix hash-ids to be real ids
+fix progress bar to recalculate on in/out
 Client side navigation - fetch Slide contents from server asynchronously if not available
+Rich content - text:
+Rich content - image:
+Rich content - background-image:
+Rich content - style:
+Rich content - transition:
+Rich content - subtitle:
+<<< 2.0
+---
+Client can save itself
+Rich content - video:
 Documentation!
-Client side navigation - true offline mode (inline CSS, dependencies, etc.)
-Splitting a slide across pages at /slide/<name>?page=2
-    - split before unroll, may now be able to unroll further on individual slides
-    - is this necessary? needs more thought
-Next rule with paging
-Tree pruning - suppress individual links
-    - note when a link is suppressed the destination should not appear in unrolled form either
-Tree pruning - suppress all links from a slide - force traversal of next branch
-Recap suppression
-Link reordering
+Get full client page from server
+Server produces client page w/customizations of CSS 
+Child reordering
 Different list styles - numbered - with slide/<name>?style=
 Different list styles - graphics (side arrow)
 Different list styles - multi-generation - org chart
 Different list styles - multi-generation - mind map
 Allow slide names to give hints to parameters, id becomes URL fragment: [<id>?style=]
-Restart existing presentation incorporating current decisions (pruning, styles, etc)
 Export presentation to PDF
-Show random slide (exclude slides with no content)
-Flash card mode (show title only, then full slide)
+Show random slide
+Flash card view (show title only, then children)
 

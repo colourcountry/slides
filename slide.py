@@ -65,6 +65,7 @@ class Slide:
     def __init__(self, **defn):
         self.setName( defn.get('name', 'Presentation') )
         self.content = []
+        self.parent = None
         self.id = self.__class__.getId()
         self.__class__.ALL[self.id] = self
 
@@ -100,6 +101,7 @@ class Slide:
         if not isinstance(slide, Slide):
             slide = self.__class__(name=slide)
         self.content.append(slide)
+        slide.parent = self
 
     def __repr__(self):
         return '%s:%s:%s' % (self.id, self.shortName, self.niceName)
@@ -111,22 +113,21 @@ class Slide:
         return json.dumps(self.dict(unroll=unroll), indent=indent, separators=separators)
 
     def dict(self, unroll=None):
-        try:
-            theId = int(self.id)
-        except ValueError:
-            theId = self.id
 
-        result = { 'id': theId, 'n': self.name }
-        if self.content:
-            if unroll is None:
-                result['c'] = [child.dict() for child in self.content]
-            elif unroll>0:
-                result['c'] = [child.dict(unroll=unroll-1) for child in self.content]
-            else:
-                pass # leave undefined
-        else:
-            # always let client know if a slide really is empty
-            result['c'] = []
+        defn = { 'id': self.id, 'n': self.name, 'c':[child.id for child in self.content] }
+
+        if self.parent:
+            defn['p'] = self.parent.id
+
+        result = { self.id: defn }
+
+        if unroll is None or unroll>0:
+            for child in self.content:
+                if unroll is None:
+                    result.update(child.dict(unroll=None))
+                else:
+                    result.update(child.dict(unroll=unroll-1))
+
         return result
         
 

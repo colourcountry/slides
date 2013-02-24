@@ -10,92 +10,75 @@ MY_PATH = os.path.dirname(__file__)
 sys.path.append(MY_PATH)
 
 
-TEST_TEXT='''
-Presentation
-    A
-    B
-        1
-            a
-                x
-                y
-                z
-            b
-                j
-                k
-                    l
-                    m
-                    n
-                    o
-                        p
-                        q
-                        r
-        2
-            aa
-        3
-            aaa
-            bbb
-    C
-        [] 11
-        [22] 22
-    [D] D
-        111
-            [aaaa] a
-                u
-                v
-                w
-            [bbbb] b
-                i
-                ii
-                iii
-                iv
-        222
-            a
-            [aaaa] a
-        333
-            [D]
-End
-'''
-
 REGULAR_TEXT = '''
-Beer
-    Historical
-        Ale
-            No hops
-            Made by ale-wives or brewsters, mostly women
-            Generally weak, drunk as an alternative to water
-        Beer
-            Hopped (but not hoppy)
-            Concept brought in by Dutch brewers
-            Comparatively strong
-            Normally dark, before invention of pale malt and water treatment
-    Modern
-        Lager
-            The most popular style currently, over 1,000,000,0000,000,000000 pints brewed every year
-        Bitter
-            Originally known as pale ale; the traditional English style, but suffers from an image problem
-            3.8 - 4.5 % (ESB and similar up to 6%)
-        IPA
-            In England practically the same as pale ale, but in America a much stronger, hoppier brew; now being re-imported into Britain by craft brewers and the like (especially Marble, Kernel, Partizan, etc)
-            The US is still the driver of the style
-        Stout and porter
-            Originally the same thing, porter died out (except for Fullers) but is now being experimented with by many brewers
-            Guinness Foreign Export Stout is a survival of pre-WWI strength
-        Minor styles
-            Wild fermentations
-                Especially in Belgium
-                Lambic---the pure stuff
-                Gueuze---a blend of old and young lambics
-                Flanders sour ales
-            Imperial X
-            Weissbier
-                Especially in Germany
-                Dunkles Weizen
-                Berliner Weisse
-            Barley wine
-            Top-fermented lager variants
-                Kölsch
-                Alt
-            Eisbock
+Presentable
+    Building on tradition
+        A slide deck is a prepared sequence of visuals
+            Tools like PowerPoint reimplement older technologies (transparencies, OHP)
+            Even Web-based slide frameworks (rvl.io, prezi.com) have the same heritage
+        Preparation requires second-guessing your audience
+            What do they already know?
+            How much detail do they need?
+            What views or visual aids will help them?
+            What might they ask at the end?
+        Coping strategies are ingrained
+            Fleshing out slides with notes
+            Adding extra "backup" slides at the end
+    transition:We need to rediscover an earlier tradition
+        background-image: http://placekitten.com/800/600
+    transition:Press ↓ now!
+        style: background-color: black
+        subtitle: Or press → if you tried that already
+        transition: You expanded the presentation to a deeper level of detail
+            style: background-color: black
+            Entries ending with … have more detail to explore
+            Pressing ↑ removes the added slides and returns you to the higher level
+            Press ↑ twice now and go back through the first section
+    Presentation is really storytelling
+        What does a storyteller do?
+            Draws on a pool of knowledge
+            Picks out a meaningful path
+            Approaches the same topic in different ways
+            Explores topics deeply, go off on tangents, skip sections
+            Encourages the audience to ask questions
+            Evolves the story through the telling
+            Puts on a memorable event
+        transition:So a presentation tool should be a storytelling aid
+        What does a storytelling aid need?
+            A pool of knowledge to draw from: a mind map
+            An intuitive way to navigate the map
+            The ability to switch between views of content
+            Tight feedback loops with the audience
+            Impactful presentation
+    How Presentable does it
+        Pool of knowledge
+            Trivially simple structure
+            Tree structure or mind map composed of entries
+            Any text entry can have children
+            Master set stored on server
+            Pull off any subtree and save as a single HTML file
+        Wayfinding
+            Skip over subtrees
+            Reorder children
+            ?
+        Alternative views
+            A text entry + its children can be viewed as
+                a list
+                an ordered list
+                a block diagram
+                a pyramid
+            A non-text entry may also have multiple views
+            Swap between any of these views dynamically
+        Feedback
+            Draw down more information from the Net if online
+            No need for "just in case" slides
+            Edit slides during the performance
+            Save from the browser
+            Submit changes to an online repository
+        Impact
+            HTML5 browser provides presentation framework
+            Display images, video
+            Advanced styling for engaging appearance
 '''            
 
 
@@ -128,8 +111,10 @@ def deck(path):
 def css(path):
     return bottle.static_file(path, root=os.path.join(MY_PATH,'css'))
 
-@bottle.route('/json/<name>')
+@bottle.route('/extract/<name>')
 def getJson(name):
+    bottle.response.headers['Access-Control-Allow-Origin'] = '*'
+
     bottle.response.status = 200
     bottle.response.content_type = 'application/json'
 
