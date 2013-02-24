@@ -19,10 +19,10 @@ class Slide:
     def get(c_lass, name, default=None):
         match = re.match('[[]([^]]+)[]](.*)', name)
         if match:
-            # fullname (with shortname in brackets) specified
+            # fullname (with key in brackets) specified
             return c_lass.ALL.get(match.group(1), default)
         else:
-            # shortname or id specified
+            # key or id specified
             return c_lass.ALL.get(name, default)
 
     @classmethod
@@ -39,11 +39,12 @@ class Slide:
             newIndent = len(line) - len(line.lstrip())
             line = line.strip()
             if line:
+                newSlide = None
                 match = re.match('[[]([^]]+)[]](.*)', line)
                 if match:
-                    newSlide = Slide.get(match.group(1), None) or Slide(name=line)
-                else:
-                    newSlide = Slide(name=line)
+                    newSlide = Slide.get(match.group(1))
+                if not newSlide:
+                    newSlide = Slide(line=line)
                 if not curSlides:
                     firstSlide = newSlide
                     curSlides.append(newSlide)
@@ -63,61 +64,79 @@ class Slide:
         return firstSlide
 
     def __init__(self, **defn):
-        self.setName( defn.get('name', 'Presentation') )
+        self.id = self.__class__.getId()
+        self.setName( defn.get('line', 'Presentation') )
         self.content = []
         self.parent = None
-        self.id = self.__class__.getId()
         self.__class__.ALL[self.id] = self
 
     def setName(self, name):
-        match = re.match('[[]([^]]+)[]](.*)', name)
+        match = re.match('[[]([^]]+)[]] *(.*)', name)
         if match:
-            shortName = match.group(1)
-            if re.match('[0-9]+$',shortName):
-                # Illegal shortname as contains only numbers
+            key = match.group(1)
+            if re.match('[0-9]+$',key):
+                # Illegal key as contains only numbers
                 niceName = name
-                shortName = None
+                key = None
             else:
-                if shortName in self.__class__.ALL:
-                    raise ValueError('Slide with short name %s already exists' % shortName)
+                if key in self.__class__.ALL:
+                    raise ValueError('Slide with key %s already exists' % key)
                 niceName = match.group(2)
         else:
             niceName = name
-            shortName = None
+            key = None
 
-        if hasattr(self, 'shortName'):
-            self.__class__.ALL.pop(self.shortName)
+        if hasattr(self, 'key'):
+            self.__class__.ALL.pop(self.key)
 
-        if shortName:
-            self.shortName = shortName
-            self.__class__.ALL[shortName] = self
+        if key:
+            self.key = key
+            self.__class__.ALL[key] = self
         else:
-            self.shortName = None
+            self.key = None
+
+        match = re.match('([a-z-]+): *(.*)', niceName)
+        if match:
+            self.style = match.group(1)
+            niceName = match.group(2)
+        else:
+            self.style = None
 
         self.niceName = niceName
+
         self.name = name
+        print(repr(self))
 
     def add(self, slide):
         if not isinstance(slide, Slide):
-            slide = self.__class__(name=slide)
+            slide = self.__class__(line=slide)
         self.content.append(slide)
         slide.parent = self
 
     def __repr__(self):
-        return '%s:%s:%s' % (self.id, self.shortName, self.niceName)
+        return '(%s/%s)%s:%s' % (self.id, self.key, self.style, self.niceName)
 
 
     def json(self, unroll=None, indent=None, separators=None):
         if separators is None:
             separators = (',', ':') # compact representation
-        return json.dumps(self.dict(unroll=unroll), indent=indent, separators=separators)
+        if indent is None:
+            return json.dumps(self.dict(unroll=unroll), separators=separators)
+        else:
+            return json.dumps(self.dict(unroll=unroll), separators=separators, indent=indent, sort_keys=True)
 
     def dict(self, unroll=None):
 
-        defn = { 'id': self.id, 'n': self.name, 'c':[child.id for child in self.content] }
+        defn = { 'id': self.id, 'n': self.niceName, 'c':[child.id for child in self.content] }
 
         if self.parent:
             defn['p'] = self.parent.id
+
+        if self.style:
+            defn['s'] = self.style
+
+        if self.key:
+            defn['k'] = self.key
 
         result = { self.id: defn }
 
@@ -208,13 +227,13 @@ class Slide:
             queries = []
         queries = '?'+'&'.join(queries+focusQuery+traceQuery)
 
-        return (self.shortName or self.id) + (queries or '')
+        return (self.key or self.id) + (queries or '')
 
     def _html(self, element, level, unroll=None, focus=None, css=None, lines=None, trace=None, queries=None, prev=None, next=None, pastFocus=None):
 
         #print("Rendering %s at level %s with unroll %s, lines %s" % (self, level, unroll, lines))
 
-        focused = (self.id == focus or self.shortName == focus)
+        focused = (self.id == focus or self.key == focus)
 
         classAttr = 'slide'
 
@@ -234,9 +253,9 @@ class Slide:
 
         ids = '''
     <span class="id">%s</span>''' % self.id
-        if self.shortName:
+        if self.key:
             ids += '''
-    <span class="shortName">%s</span>''' % self.shortName
+    <span class="key">%s</span>''' % self.key
 
         heading = '''    <p>%s<a href="%s">%s</a></p>
 ''' % (ids, link, self.niceName)

@@ -49,7 +49,16 @@ Rich content - style:
 Rich content - transition:
 Rich content - subtitle:
 <<< 2.0
+Split name and style into distinct fields
+Rich content - codeblock:
+Rich content - boxes:
+Rich content - bubbles:
 ---
+Bug: internal links don't work
+Bug: direct URL doesn't work (need to change URL syntax to do this as don't know what has been unrolled)
+Allow hash-urls to be slide keys, not just ids
+Navigation uses key by preference
+Refactor content types into plugins
 Client can save itself
 Rich content - video:
 Documentation!

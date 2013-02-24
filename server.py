@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 
-import os, sys, json
+import os, re, sys, json
 import slide
 import bottle
 bottle.debug(True)
@@ -12,21 +12,23 @@ sys.path.append(MY_PATH)
 
 REGULAR_TEXT = '''
 Presentable
-    Building on tradition
+    [introduction] Building on tradition
         A slide deck is a prepared sequence of visuals
             Tools like PowerPoint reimplement older technologies (transparencies, OHP)
             Even Web-based slide frameworks (rvl.io, prezi.com) have the same heritage
-        Preparation requires second-guessing your audience
+        bubbles:Need to second-guess your audience
             What do they already know?
             How much detail do they need?
             What views or visual aids will help them?
             What might they ask at the end?
-        Coping strategies are ingrained
+        boxes:Coping strategies are ingrained
             Fleshing out slides with notes
             Adding extra "backup" slides at the end
-    transition:We need to rediscover an earlier tradition
-        background-image: http://placekitten.com/800/600
-    transition:Press ↓ now!
+            Ditching the visuals entirely
+    transition:We need to rediscover an older tradition
+        style: color: #f62;
+        background-image: http://upload.wikimedia.org/wikipedia/commons/thumb/1/12/A_Story-teller_reciting_from_the_%22Arabian_Nights.%22_%281911%29_-_TIMEA.jpg/800px-A_Story-teller_reciting_from_the_%22Arabian_Nights.%22_%281911%29_-_TIMEA.jpg
+    [demo] transition:Press ↓ now!
         style: background-color: black
         subtitle: Or press → if you tried that already
         transition: You expanded the presentation to a deeper level of detail
@@ -39,29 +41,29 @@ Presentable
             Draws on a pool of knowledge
             Picks out a meaningful path
             Approaches the same topic in different ways
-            Explores topics deeply, go off on tangents, skip sections
+            Explores topics deeply, goes off on tangents, skips sections
             Encourages the audience to ask questions
             Evolves the story through the telling
             Puts on a memorable event
         transition:So a presentation tool should be a storytelling aid
-        What does a storytelling aid need?
-            A pool of knowledge to draw from: a mind map
-            An intuitive way to navigate the map
+        ol:What does a storytelling aid need?
+            A pool of knowledge to draw from
+            An intuitive way to navigate
             The ability to switch between views of content
             Tight feedback loops with the audience
             Impactful presentation
-    How Presentable does it
-        Pool of knowledge
+    ol:How Presentable does it
+        The pool of knowledge is a mind map
             Trivially simple structure
             Tree structure or mind map composed of entries
             Any text entry can have children
             Master set stored on server
             Pull off any subtree and save as a single HTML file
-        Wayfinding
+        Tree navigation provides wayfinding
             Skip over subtrees
             Reorder children
             ?
-        Alternative views
+        Each entry has a choice of views
             A text entry + its children can be viewed as
                 a list
                 an ordered list
@@ -75,13 +77,18 @@ Presentable
             Edit slides during the performance
             Save from the browser
             Submit changes to an online repository
-        Impact
-            HTML5 browser provides presentation framework
+        HTML5 provides engaging visuals
+            CSS3 provides rich styles and transitions
             Display images, video
-            Advanced styling for engaging appearance
-'''            
+            Canvas allows the client to build diagrams
+    transition:Thank you!
+        subtitle:djl@colourcountry.net
+        background-image: http://placekitten.com/800/600
+        transition:Behind the scenes
+            style: color: #8f0;
+            background-codeblock:\\n\\n\\n\\n\\n'''
 
-
+REGULAR_TEXT += re.sub('\\s*\\n','\\\\n',REGULAR_TEXT)
 
 DECKJS_HEAD = '''
         <meta charset="utf-8">

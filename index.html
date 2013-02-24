@@ -3,7 +3,7 @@
 
 <div id="slide-container"></div>
 
-<link href='http://fonts.googleapis.com/css?family=Oswald' rel='stylesheet'>
+<!--link href='http://fonts.googleapis.com/css?family=Oswald' rel='stylesheet'-->
 
 <style>
 /* dzslides stylesheet */
@@ -19,15 +19,14 @@
 
   }
 
-  /* A section is a slide. It's size is 800x600, and this will never change */
+  /* A section is a slide. Its size is 800x600, and this will never change */
   section, .view head > title {
       /* The font from Google */
-      font-family: 'Oswald', arial, serif;
+      font-family: 'Oswald', serif;
       font-size: 30px;
   }
 
   h1, h2, h3, h4, h5, h6 {
-    text-shadow: #000011 4px 4px 4px;
     z-index: 0;
   }
 
@@ -41,11 +40,12 @@
   }
     
   a:hover {
-    color: #44ccff;
+    color: #f62;
   }
 
   ul {
-    list-style-type: none;
+        list-style-type: none;
+        margin: 50px 100px 50px 180px;
   }
 
   ul li:before {
@@ -54,17 +54,17 @@
         font-weight: 200;
   }
 
-  .view section:after {
-    counter-increment: slideidx;
-    content: counter(slideidx, decimal-leading-zero);
-    position: absolute; bottom: -80px; right: 100px;
-    color: white;
+  ul li {
+        text-indent: -80px;
   }
 
-  .view head > title {
-    color: white;
-    text-align: center;
-    margin: 1em 0 1em 0;
+  ol {
+        list-style-position: inside;
+        margin: 50px 100px 50px 160px;
+  }
+
+  ol li {
+        text-indent: -40px;
   }
 
   h1 {
@@ -82,9 +82,6 @@
     margin: 100px 0 50px 100px;
   }
 
-  ul {
-      margin: 50px 100px 50px 100px;
-  }
 
   p {
     margin: 75px;
@@ -116,7 +113,7 @@
     left: 0;
     z-index: -1;
   }
-  figure img, figure video {
+  figure img, figure video, figure div {
     width: 100%; height: 100%;
   }
   figcaption {
@@ -134,6 +131,47 @@
     border-top: 1px solid #CCC;
   }
 
+
+div.bubble {
+    border-radius: 56px;
+    padding: 24px 24px 24px 32px;
+    border: 4px solid black;
+    background-color: #240;
+    width: 300px;
+    position: absolute;
+}
+
+div.box {
+    border: 4px solid black;
+    background-color: #510;
+    padding: 24px;
+    vertical-align: middle;
+    position: absolute;
+}
+
+div.codeblock {
+    background-color: black;
+    font-family: monospace;
+    font-size: 12pt;
+    white-space: pre;
+}
+
+
+/** VIEW (CURRENTLY UNUSED) **/
+
+  .view section:after {
+    counter-increment: slideidx;
+    content: counter(slideidx, decimal-leading-zero);
+    position: absolute; bottom: -80px; right: 100px;
+    color: white;
+  }
+
+  .view head > title {
+    color: white;
+    text-align: center;
+    margin: 1em 0 1em 0;
+  }
+
   .view section {
     -moz-transition: none;
     -webkit-transition: none;
@@ -145,6 +183,8 @@
     border: 5px red solid;
   }
 
+
+/** SLIDE MECHANICS / TRANSITIONS **/
 
 /* All slides and earlier slides */
 section {
@@ -480,7 +520,7 @@ section[aria-selected] {
     if (typeof target == 'undefined') {
         console.warn('No slide at index '+aIdx);
     } else {
-        this.setCursor( target.getAttribute('id').slice(1) );
+        this.setCursor( target.getAttribute('id').slice(1), aStep );
     }
   }
 
@@ -712,78 +752,186 @@ section[aria-selected] {
 
 <script>
 
-HTML_UNSAFE = { '"': '&quot;', '&': '&amp;', '<': '&lt;', '>': '&gt;' };
+get_section = (function() {
 
-split_type = function(text) {
-    text = text.replace(/[\"&<>]/g, function (a) { return HTML_UNSAFE[a]; });
-    if ( text.match(/^[a-z-]+:/)) {
-        var idx = text.indexOf(":");
-        return { type: text.slice(0,idx), value: text.slice(idx+1) };
-    } else {
-        return { type: "text", value: text };
-    }
-}
+    var HTML_UNSAFE = { '"': '&quot;', '&': '&amp;', '<': '&lt;', '>': '&gt;', '\\n': '\n' };
 
-get_link = function(id) {
-    return 's'+id;
-};
+    var html = function(text) {
+        return text.replace(/[\"&<>]|\\n/g, function (a) { return HTML_UNSAFE[a]; });
+    };
 
-get_section = function(id, view) {
+    var get_href = function(id) {
+        return '#'+id+'.0';
+    };
 
-        console.log("get_section "+id);
-        /* we can be sure it's in the cache already */
-        var defn = DECK_CACHE[id];
-
-        if (typeof defn.c == 'undefined') {
-            var content = '<section id="s'+id+'"><h1>'+split_type(defn.n).value+'</h1>';
-            return content + '<p><a href="'+get_link(id)+'">This slide has content which has not been downloaded.</a></p>';
-        } else if (defn.c.length > 0) {
-            return VIEWS['plain'](defn);
-        } else {
-            return '';
+    var get_view = function(views, defn, fallback) {
+        var style = fallback;
+        if (typeof defn.s != 'undefined' && typeof views[defn.s] != 'undefined') {
+            style = defn.s;
         }
-};
+        var result = views[style](defn);
+        console.debug( defn.n+' rendered as '+style+': '+result );
+        return result;
+    }
 
-VIEWS = {
-    plain: function(defn) {
-        var obj = split_type(defn.n);
+    var CHILD_VIEWS = {
+        'text': function(defn) {
+            if (typeof defn.c == 'undefined' || defn.c.length > 0) {
+                /* undefined means there may be content but we haven't unrolled it yet to find out */
+                return '<a onclick="Dz.in('+defn.id+'); window.event.preventDefault();" href="'+get_href(defn.id)+'">'+html(defn.n)+'</a>';
+            } else {
+                /* defn has no content for sure so there is no link */
+                return html(defn.n);
+            }
+        },
+        'image': function(defn) { return '<img src="'+html(defn.n)+'">' },
+        'background-image': function(defn) { return '<img src="'+html(defn.n)+'">' },
+        'codeblock': function(defn) { return '<div class="codeblock">'+html(defn.n)+'</div>' },
+        'background-codeblock': function(defn) { return '<div class="codeblock">'+html(defn.n)+'</div>' }
+    }
 
-        if (obj.type == 'subtitle') {
-            /* subtitles are not expandable */
-            return '';
-        } else {
+    var object_view = function(object_fn) {
+        return function(defn) {
             var attrs = '';
             var figures = '';
+            var heading = '<h1>'+html(defn.n)+'</h1>'
+            for (var i=0; i<defn.c.length; i++) {
+                var child = DECK_CACHE[defn.c[i]];
+                if (typeof child.s == 'undefined') {
+                    /* nothing special */
+                } else if (child.s == 'background-image') {
+                    figures += '<figure>'+get_view(CHILD_VIEWS,child,'text')+'</figure>'
+                } else if (child.s == 'background-codeblock') {
+                    figures += '<figure>'+get_view(CHILD_VIEWS,child,'text')+'</figure>'
+                } else if (child.s == 'style') {
+                    attrs += ' style="'+child.n+'"';
+                } else if (child.s == 'subtitle') {
+                    heading += '<h2>'+html(child.n)+'</h2>';
+                }
+            }
+            return '<section id="s'+defn.id+'"'+attrs+'>'+heading+figures+object_fn(defn)+'</section>';
+        };
+    }
+
+    var list_view = function(container,item,container_attrs,item_attrs) {
+
+        if (typeof item_attrs == 'undefined' || item_attrs == '') {
+            item_attrs = '';
+        }
+
+        if (typeof container_attrs == 'undefined' || container_attrs == '') {
+            container_attrs = '';
+        }
+
+        if (typeof item == 'undefined' || item == '') {
+            cl_item = '';
+            item = '';
+        } else {
+            cl_item = '</'+item+'>';
+            item = '<'+item+' '+item_attrs+'>';
+        }
+
+        if (typeof container == 'undefined' || container == '') {
+            cl_container = '';
+            container = '';
+        } else {
+            cl_container = '</'+container+'>';
+            container = '<'+container+' '+container_attrs+'>';
+        }
+
+        return object_view( function(defn) {
             var ul = '';
             for (var i=0; i<defn.c.length; i++) {
                 var child = DECK_CACHE[defn.c[i]];
-                var cobj = split_type(child.n);
-                if (cobj.type == 'text') {
-                    /* only text objects can have their own children */
-                    console.log( child.n+" has children "+child.c );
-                    if (typeof child.c == 'undefined' || child.c.length > 0) {
-                        /* undefined means there may be content but we haven't unrolled it yet to find out */
-                        ul += '<li><a href="'+get_link(child.id)+'">'+cobj.value+'</a></li>';
-                    } else {
-                        /* child has no content for sure so there is no link */
-                        ul += '<li>'+cobj.value+'</li>';
-                    }
-                } else if (cobj.type == 'image') {
-                    ul += '<li><img src="'+cobj.value+'"/></li>'
-                } else if (cobj.type == 'background-image') {
-                    figures += '<figure><img src="'+cobj.value+'"/></figure>'
-                } else if (cobj.type == 'style') {
-                    attrs += ' style="'+cobj.value+'"';
-                } else if (cobj.type == 'transition') {
-                    /* transitions are hidden from their parents */
-                } else if (cobj.type == 'subtitle') {
-                    ul += '<h2>'+cobj.value+'</h2>';
+                if (typeof child.s == 'undefined') {
+                    ul += item+get_view(CHILD_VIEWS,child,'text')+cl_item;
+                } else if (child.s == 'transition') {
+                } else if (child.s == 'background-image') {
+                } else if (child.s == 'background-codeblock') {
+                } else if (child.s == 'style') {
+                } else if (child.s == 'subtitle') {
+                } else {
+                    ul += item+get_view(CHILD_VIEWS,child,'text')+cl_item;
                 }
             }
-            return '<section id="s'+defn.id+'"'+attrs+'><h1>'+obj.value+'</h1>'+figures+'<ul>'+ul+'</ul></section>';
+            return container+ul+cl_container;
+       });
+    }
+
+    var cluster_view = function( c_lass, is_incremental, style_fn ) {
+        return object_view( function(defn) {
+            var obj = [];
+            var item_attrs = ' class="'+c_lass+'"';
+            for (var i=0; i<defn.c.length; i++) {
+                var child = DECK_CACHE[defn.c[i]];
+                if (typeof child.s == 'undefined') {
+                    obj.push( get_view(CHILD_VIEWS,child,'text') );
+                } else if (child.s == 'transition') {
+                } else if (child.s == 'background-image') {
+                } else if (child.s == 'background-codeblock') {
+                } else if (child.s == 'style') {
+                } else if (child.s == 'subtitle') {
+                } else if (child.s == 'item-style') {
+                    item_attrs += ' style="'+html(child.n)+'"';
+                } else {
+                    obj.push( get_view(CHILD_VIEWS,child,'text') );
+                }
+            }
+
+            if ( is_incremental ) {
+                result = '<div class="incremental">';
+            } else {
+                result = '<div>';
+            }
+
+            for (var i=0; i<obj.length; i++) {
+                style_attr = style_fn( i, obj.length );
+                result += '<div'+item_attrs+' style="'+style_attr+'">'+obj[i]+'</div>';
+            }
+            result += '</div>';
+            return result;
+        });
+    }
+
+    var SECTION_VIEWS = {
+        'p': list_view('p'),
+        'ul': list_view('ul','li'),
+        'ul-build': list_view('ul','li','class="incremental"'),
+        'ol': list_view('ol','li'),
+        'ol-build': list_view('ol','li','class="incremental"'),
+        'bubbles': cluster_view( "bubble", true, function( idx, total ) {
+                if ( idx==total-1 && idx>3 ) {
+                    var x = 250;
+                    var y = 220;
+                } else {
+                    var x = 250-Math.cos(idx*1.4+0.3)*200;
+                    var y = 200-Math.sin(idx*1.4+0.3)*150;
+                }
+            return "left: "+x+"px; bottom: "+y+"px";
+        }),
+        'boxes': cluster_view( "box", true, function( idx, total ) {
+            var width = 700/total;
+            var x = width*idx+50;
+            return "height: 300px; width: "+width+"px; left: "+x+"px; bottom: 50px";
+        }),
+    }
+
+    return function(id, view) {
+        console.log("get_section "+id);
+        /* we can be sure it's in the cache already */
+        var defn = DECK_CACHE[id];
+    
+        if (typeof defn.c == 'undefined') {
+            var content = '<section id="s'+id+'"><h1>'+html(text)+'</h1>';
+            return content + '<p><a href="'+get_href(id)+'">This slide has content which has not been downloaded.</a></p>';
+        } else if (defn.c.length > 0) {
+            return get_view(SECTION_VIEWS,defn,'ul');
+        } else {
+            /* no children, do not expand */
+            return '';
         }
     }
-};
+}());
 
 get_slides = function(id, unroll) {
 
@@ -924,7 +1072,8 @@ Dz.reinit = function() {
 }
 
 
-Dz.in = function() {
+Dz.in = function(go_to) {
+    console.debug('unrolling to '+go_to);
 
     var deck_id = this.slides[this.idx-1].getAttribute('id');
     var target = $('#c'+deck_id);
@@ -943,14 +1092,22 @@ Dz.in = function() {
                     target.innerHTML = slide_html;
                     target.removeAttribute('aria-unroll');
                     this.reinit();
-                    this.forward();
+                    if (typeof go_to == 'undefined') {
+                        this.forward();
+                    } else {
+                        this.setCursor(go_to);
+                    }
                 }.bind(this));
 
             }
         }.bind(this));
     } else {
         /* Already unrolled */
-        this.forward();
+        if (typeof go_to == 'undefined') {
+           this.forward();
+        } else {
+           this.setCursor(go_to);
+        }
     }
 };
 
