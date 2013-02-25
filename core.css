@@ -1,0 +1,147 @@
+
+/*
+  html.view { overflow: visible; }
+
+  .view body { background-color: black; counter-reset: slideidx; 
+
+  .view section {
+    background-color: #002a44;
+    border-radius: 12px;
+    color: white;
+    text-shadow: #000011 2px 2px 2px;
+  }
+
+  .view section {
+    pointer-events: auto;
+    position: static;
+    width: 800px; height: 600px;
+    margin: -150px -200px;
+    float: left;
+
+    transform: scale3d(.4);
+    -moz-transform: scale3d(.4);
+    -webkit-transform: scale3d(.4);
+    -o-transform: scale3d(.4);
+    -ms-transform: scale3d(.4);
+  }
+  .view section > * { pointer-events: none; }
+
+  .view body {
+    position: static;
+    margin: 0; padding: 0;
+    width: 100%; height: 100%;
+    display: inline-block;
+    overflow: visible; overflow-x: hidden;
+    transform: none !important;
+    -moz-transform: none !important;
+    -webkit-transform: none !important;
+    -o-transform: none !important;
+    -ms-transform: none !important;
+  }
+  .view head, .view head > title { display: block }
+
+  .view section:after {
+    counter-increment: slideidx;
+    content: counter(slideidx, decimal-leading-zero);
+    position: absolute; bottom: -80px; right: 100px;
+    color: white;
+  }
+
+  .view head > title {
+    color: white;
+    text-align: center;
+    margin: 1em 0 1em 0;
+  }
+
+  .view section {
+    -moz-transition: none;
+    -webkit-transition: none;
+    -ms-transition: none;
+    transition: none;
+  }
+
+  .view section[aria-selected] {
+    border: 5px red solid;
+  }
+
+  .view #progress-bar {
+    display: none;
+  }
+
+*/
+
+/** SLIDE MECHANICS / TRANSITIONS **/
+
+/* All slides and earlier slides */
+section {
+        left: 0;
+        display: block;
+        opacity: 0;
+
+        -webkit-transition: opacity 300ms;
+           -moz-transition: opacity 300ms;
+            -ms-transition: opacity 300ms;
+                transition: opacity 300ms;
+}
+
+/* Later slides */
+section[aria-selected] section,  section[aria-selected] ~ section,  section[aria-selected] ~* section,  [aria-parent] ~ section,  [aria-parent] ~* section {
+}
+
+/* Current slide */
+section[aria-selected] {
+        -webkit-transform: none;
+           -moz-transform: none;
+            -ms-transform: none;
+                transform: none;
+        opacity: 1;
+}
+
+
+  
+
+  /* Incremental elements */
+
+  /* By default, visible */
+  .incremental > * { opacity: 1; }
+
+  /* The current item */
+  .incremental > *[aria-selected] { opacity: 1; }
+
+  /* The items to-be-selected */
+  .incremental > *[aria-selected] ~ * { opacity: 0; }
+
+  /* The progressbar, at the bottom of the slides, show the global
+     progress of the presentation. */
+  #progress-bar {
+    height: 2px;
+    background: #AAA;
+  }
+
+  * { margin: 0; padding: 0; -moz-box-sizing: border-box; -webkit-box-sizing: border-box; box-sizing: border-box; }
+  [role="note"] { display: none; }
+  body {
+    width: 800px; height: 600px;
+    margin-left: -400px; margin-top: -300px;
+    position: absolute; top: 50%; left: 50%;
+    overflow: hidden;
+    display: none;
+  }
+  section {
+    position: absolute;
+    pointer-events: none;
+    width: 100%; height: 100%;
+  }
+  section[aria-selected] { pointer-events: auto; }
+  html { overflow: hidden; }
+  body.loaded { display: block; }
+  .incremental {visibility: hidden; }
+  .incremental[active] {visibility: visible; }
+  #progress-bar{
+    bottom: 0;
+    position: absolute;
+    -moz-transition: width 200ms linear 0s;
+    -webkit-transition: width 200ms linear 0s;
+    -ms-transition: width 200ms linear 0s;
+    transition: width 200ms linear 0s;
+  }

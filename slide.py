@@ -30,7 +30,15 @@ class Slide:
         global ID
         ID += 1
         return str(ID)
-    
+
+    @classmethod
+    def findRoot(self):
+        k,v = Slide.ALL.popitem()
+        Slide.ALL[k]=v
+        while v.parent:
+            v = v.parent
+        return v
+
     @classmethod
     def readText(c_lass, lines):
         curSlides=[]
@@ -70,6 +78,7 @@ class Slide:
         self.parent = None
         self.__class__.ALL[self.id] = self
 
+
     def setName(self, name):
         match = re.match('[[]([^]]+)[]] *(.*)', name)
         if match:
@@ -105,7 +114,6 @@ class Slide:
         self.niceName = niceName
 
         self.name = name
-        print(repr(self))
 
     def add(self, slide):
         if not isinstance(slide, Slide):
@@ -117,13 +125,13 @@ class Slide:
         return '(%s/%s)%s:%s' % (self.id, self.key, self.style, self.niceName)
 
 
-    def json(self, unroll=None, indent=None, separators=None):
-        if separators is None:
-            separators = (',', ':') # compact representation
-        if indent is None:
-            return json.dumps(self.dict(unroll=unroll), separators=separators)
-        else:
-            return json.dumps(self.dict(unroll=unroll), separators=separators, indent=indent, sort_keys=True)
+    def json(self, unroll=None):
+        separators = (',', ':') # compact representation
+        d = '{\n' # put each slide on its own line despite above
+        for k, v in sorted(self.dict(unroll=unroll).items()):
+            d += json.dumps(k)+':'+json.dumps(v, separators=separators)+',\n'
+        return d[:-2]+'\n}\n'
+
 
     def dict(self, unroll=None):
 
@@ -148,6 +156,22 @@ class Slide:
                     result.update(child.dict(unroll=unroll-1))
 
         return result
+
+
+    def styles(self, unroll=None):
+        result = set()
+        if self.style:
+            result.add(self.style)
+
+        if unroll is None or unroll>0:
+            for child in self.content:
+                if unroll is None:
+                    result.update(child.styles(unroll=None))
+                else:
+                    result.update(child.styles(unroll=unroll-1))
+
+        return result
+    
         
 
     def html(self, unroll=None, focus=None, css=None, lines=None, trace=None):

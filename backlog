@@ -43,6 +43,9 @@ fix hash-ids to be real ids
 fix progress bar to recalculate on in/out
 Client side navigation - fetch Slide contents from server asynchronously if not available
 Rich content - text:
+Rich content - ul:
+Rich content - ol:
+Rich content - p:
 Rich content - image:
 Rich content - background-image:
 Rich content - style:
@@ -51,26 +54,38 @@ Rich content - subtitle:
 <<< 2.0
 Split name and style into distinct fields
 Rich content - codeblock:
-Rich content - boxes:
+Rich content - background-codeblock:
+Rich content - ul-incremental:
+Rich content - ol-incremental:
+Flash card view (show title only, then children) - p-incremental:
 Rich content - bubbles:
+Rich content - boxes:
+Working internal links (inc. unroll as necessary)
+Rich content - add class name to all sections of that class
+On init, move to front page (so links with hash aren't actually broken---arguably useful too, since know the available scope)
+Get full client page from server at /presentation/<id> -- no content
+Get client page from server at /presentation/<id>?unroll= including preloaded subtree of chosen slide to desired unroll level
+Allow "up" from root where parent id known (fetches new root from server, don't do it in js)
+Auto-"up" if child entry specified in URL (which would not yield a slide)
+Minify script with cssmin, rjsmin
+Refactor content types into plugins
+Server produces client page w/required plugins, CSS, etc.
 ---
-Bug: internal links don't work
-Bug: direct URL doesn't work (need to change URL syntax to do this as don't know what has been unrolled)
+Bug: incremental step 0 shows all rather than hiding all
+Fix CSS inheritance (currently hacked in text.type.css) --how?
+Server can inline *everything* (images, objects) for completely stand-alone presentation
+Allow slides to have multiple parents: if a slide has already been unrolled somewhere else, link but do not unroll again
 Allow hash-urls to be slide keys, not just ids
 Navigation uses key by preference
-Refactor content types into plugins
-Client can save itself
 Rich content - video:
 Documentation!
-Get full client page from server
-Server produces client page w/customizations of CSS 
 Child reordering
-Different list styles - numbered - with slide/<name>?style=
 Different list styles - graphics (side arrow)
 Different list styles - multi-generation - org chart
 Different list styles - multi-generation - mind map
-Allow slide names to give hints to parameters, id becomes URL fragment: [<id>?style=]
-Export presentation to PDF
 Show random slide
-Flash card view (show title only, then children)
-
+<<< 3.0
+Export presentation to PDF (is this useful?)
+Edit on client and submit to server
+Hash-urls to subslides (need to change URL syntax to do this as don't know what has been unrolled---bookmarkable, but maybe confusing?)
+Client can save itself locally and submit later

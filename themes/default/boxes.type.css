@@ -1,0 +1,13 @@
+.x div div {
+    border: 4px solid black;
+    background-color: #510;
+    padding: 24px;
+    vertical-align: middle;
+    position: absolute;
+
+    background-image: linear-gradient(135deg, #300 2%, #930 100%);
+    background-image: -o-linear-gradient(135deg, #300 2%, #930 100%);
+    background-image: -ms-linear-gradient(135deg, #300 2%, #930 100%);
+    background-image: -moz-linear-gradient(135deg, #300 2%, #930 100%);
+    background-image: -webkit-linear-gradient(135deg, #300 2%, #930 100%);
+}

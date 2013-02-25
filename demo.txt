@@ -1,0 +1,75 @@
+Presentable
+    [introduction] Building on tradition
+        A slide deck is a prepared sequence of visuals
+            Tools like PowerPoint reimplement older technologies (transparencies, OHP)
+            Even Web-based slide frameworks (rvl.io, prezi.com) have the same heritage
+        bubbles:Need to second-guess your audience
+            What do they already know?
+            How much detail do they need?
+            What views or visual aids will help them?
+            What might they ask at the end?
+        boxes:Coping strategies are ingrained
+            Fleshing out slides with notes
+            Adding extra "backup" slides at the end
+            Ditching the visuals entirely
+    transition:We need to rediscover an older tradition
+        style: color: #f62;
+        background-image: http://upload.wikimedia.org/wikipedia/commons/thumb/1/12/A_Story-teller_reciting_from_the_%22Arabian_Nights.%22_%281911%29_-_TIMEA.jpg/800px-A_Story-teller_reciting_from_the_%22Arabian_Nights.%22_%281911%29_-_TIMEA.jpg
+    [demo] transition:Press ↓ now!
+        style: background-color: black
+        subtitle: Or press → if you tried that already
+        transition: You expanded the presentation to a deeper level of detail
+            style: background-color: black
+            Entries ending with … have more detail to explore
+            Pressing ↑ removes the added slides and returns you to the higher level
+            Press ↑ twice now and go back through the first section
+    Presentation is really storytelling
+        What does a storyteller do?
+            Draws on a pool of knowledge
+            Picks out a meaningful path
+            Approaches the same topic in different ways
+            Explores topics deeply, goes off on tangents, skips sections
+            Encourages the audience to ask questions
+            Evolves the story through the telling
+            Puts on a memorable event
+        transition:So a presentation tool should be a storytelling aid
+        ol:What does a storytelling aid need?
+            A pool of knowledge to draw from
+            An intuitive way to navigate
+            The ability to switch between views of content
+            Tight feedback loops with the audience
+            Impactful presentation
+    ol:How Presentable does it
+        The pool of knowledge is a mind map
+            Trivially simple structure
+            Tree structure or mind map composed of entries
+            Any text entry can have children
+            Master set stored on server
+            Pull off any subtree and save as a single HTML file
+        Tree navigation provides wayfinding
+            Skip over subtrees
+            Reorder children
+            ?
+        Each entry has a choice of views
+            A text entry + its children can be viewed as
+                a list
+                an ordered list
+                a block diagram
+                a pyramid
+            A non-text entry may also have multiple views
+            Swap between any of these views dynamically
+        Feedback
+            Draw down more information from the Net if online
+            No need for "just in case" slides
+            Edit slides during the performance
+            Save from the browser
+            Submit changes to an online repository
+        HTML5 provides engaging visuals
+            CSS3 provides rich styles and transitions
+            Display images, video
+            Canvas allows the client to build diagrams
+    transition:Thank you!
+        image: http://placekitten.com/800/600
+        subtitle:djl@colourcountry.net
+        transition:Behind the scenes
+            codeblock: Presentable\n    [introduction] Building on tradition\n        A slide deck is a prepared sequence of visuals\n            Tools like PowerPoint reimplement older technologies (transparencies, OHP)\n            Even Web-based slide frameworks (rvl.io, prezi.com) have the same heritage\n        bubbles:Need to second-guess your audience\n            What do they already know?\n            How much detail do they need?\n            What views or visual aids will help them?\n            What might they ask at the end?\n        boxes:Coping strategies are ingrained\n            Fleshing out slides with notes\n            Adding extra "backup" slides at the end\n            Ditching the visuals entirely\n    transition:We need to rediscover an older tradition\n        style: color: #f62;\n        background-image: http://upload.wikimedia.org/wikipedia/commons/thumb/1/12/A_Story-teller_reciting_from_the_%22Arabian_Nights.%22_%281911%29_-_TIMEA.jpg/800px-A_Story-teller_reciting_from_the_%22Arabian_Nights.%22_%281911%29_-_TIMEA.jpg\n    [demo] transition:Press ↓ now!\n        style: background-color: black\n        subtitle: Or press → if you tried that already\n        transition: You expanded the presentation to a deeper level of detail\n            style: background-color: black\n            Entries ending with … have more detail to explore\n            Pressing ↑ removes the added slides and returns you to the higher level\n            Press ↑ twice now and go back through the first section
