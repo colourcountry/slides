@@ -79,7 +79,10 @@ section a {
 }
 
 section a:after {
-    content: "\2026";
+    color: #f62;
+    content: " \21e3";
+    font-size: 50%;
+    font-weight; bold;
 }
     
 section a:hover {
@@ -94,12 +97,10 @@ section>ul {
 .section-head>img {
     margin: 15px;
     border: 15px solid black;
-    max-width: 800px;
-    max-height: 380px;
 }
 
 .section-head>video {
-    border: 16px solid black;
+    border: 15px solid black;
     max-width: 800px;
     max-height: 380px;
 }
@@ -132,7 +133,7 @@ section blockquote:after {
 section pre {
     text-align: left;
     background-color: black;
-    color: white;
+    color: #8f4;
     font-size: 20px;
     padding: 20px 0 20px 0;
 }

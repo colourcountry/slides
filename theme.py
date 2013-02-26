@@ -16,6 +16,8 @@ STYLES = {
     'subtitle':         {                   'js': 'default/subtitle.type.js'        },
     'codeblock':        {                   'js': 'default/codeblock.type.js'       },
     'background-image': {                   'js': 'default/background-image.type.js'},
+    'side-image':       {                   'js': 'default/side-image.type.js'      },
+    'side-arrow':       {                   'js': 'default/side-arrow.type.js'      },
     'style':            {                   'js': 'default/style.type.js'           }
 }
 

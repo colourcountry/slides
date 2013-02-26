@@ -25,7 +25,7 @@ Presentable
             Press ↑ twice now and go back through the first section
     Presentation is really storytelling
         What does a storyteller do?
-            Draws on a pool of knowledge
+            Draws on a body of knowledge
             Picks out a meaningful path
             Approaches the same topic in different ways
             Explores topics deeply, goes off on tangents, skips sections
@@ -34,13 +34,13 @@ Presentable
             Puts on a memorable event
         transition:So a presentation tool should be a storytelling aid
         ol:What does a storytelling aid need?
-            A pool of knowledge to draw from
+            A body of knowledge to draw from
             An intuitive way to navigate
             The ability to switch between views of content
             Tight feedback loops with the audience
             Impactful presentation
     ol:How Presentable does it
-        The pool of knowledge is a mind map
+        The body of knowledge is a mind map
             Trivially simple structure
             Tree structure or mind map composed of entries
             Any text entry can have children
@@ -48,16 +48,51 @@ Presentable
             Pull off any subtree and save as a single HTML file
         Tree navigation provides wayfinding
             Skip over subtrees
-            Reorder children
-            ?
-        Each entry has a choice of views
-            A text entry + its children can be viewed as
-                a list
-                an ordered list
-                a block diagram
-                a pyramid
-            A non-text entry may also have multiple views
+            Reorder children (not yet)
+        Views provide different visual effects
             Swap between any of these views dynamically
+            Most layouts are really pure text
+                unordered or ordered list
+                    1
+                    2
+                    3
+                    4
+                process:process
+                    1
+                    2
+                    3
+                    4
+                grid:grid
+                    1
+                    2
+                    3
+                    4
+                pyramid:pyramid
+                    1
+                    2
+                    3
+                    4
+            Typed entries provide more layout options
+                Arrows
+                    side-arrow:Business value
+                    1
+                    2
+                    3
+                    4
+                Images
+                    side-image:http://placekitten.com/200/200
+                    1
+                    2
+                    3
+                    4
+                grid:Combine types with views
+                    flash:40% more learning!
+                    side-arrow:Business value
+                    bottom-arrow:Mendacity
+                    1
+                    2
+                    3
+                    4
         Feedback
             Draw down more information from the Net if online
             No need for "just in case" slides
@@ -68,8 +103,35 @@ Presentable
             CSS3 provides rich styles and transitions
             Display images, video
             Canvas allows the client to build diagrams
-    transition:Thank you!
+    How to use Presentable
+        Server side
+            BoK is a single text file
+                codeblock: Presentable\n    Building on tradition\n        A slide deck is a prepared sequence of visuals\n            Tools like PowerPoint reimplement older technologies (transparencies, OHP)\n            Even Web-based slide frameworks (rvl.io, prezi.com) have the same heritage\n        bubbles:Need to second-guess your audience\n            What do they already know?\n            How much detail do they need?\n            What views or visual aids will help them?\n            What might they ask at the end?
+                One line per entry (slide or list item)
+                Simple to edit
+            Python mini-server
+                codeblock: ./server.py bok.txt
+                Uses bottle.py
+            Or rip the HTML directly
+                codeblock: ./presentation.py bok.txt > /media/sdcard/my_slides.html
+        Client side
+            Download one slide
+                codeblock: http://server/presentation/<id>
+                Navigating "down" fetches more with AJAX
+            Download whole tree
+                codeblock: http://server/offline/<id>
+                Right click, "Save As"...
+                Navigating "up" gets the parent tree
+            Open a presentation from a local file
+                All required CSS, JS baked in
+    Future plans    
+        Bake in images and videos
+        More layouts to choose from
+        Client-side editing
+        Super-rich types
+        BoK as mind map software
+        BoK as research tool
+    Summary
         image: http://placekitten.com/800/600
         subtitle:djl@colourcountry.net
-        transition:Behind the scenes
-            codeblock: Presentable\n    [introduction] Building on tradition\n        A slide deck is a prepared sequence of visuals\n            Tools like PowerPoint reimplement older technologies (transparencies, OHP)\n            Even Web-based slide frameworks (rvl.io, prezi.com) have the same heritage\n        bubbles:Need to second-guess your audience\n            What do they already know?\n            How much detail do they need?\n            What views or visual aids will help them?\n            What might they ask at the end?\n        boxes:Coping strategies are ingrained\n            Fleshing out slides with notes\n            Adding extra "backup" slides at the end\n            Ditching the visuals entirely\n    transition:We need to rediscover an older tradition\n        style: color: #f62;\n        background-image: http://upload.wikimedia.org/wikipedia/commons/thumb/1/12/A_Story-teller_reciting_from_the_%22Arabian_Nights.%22_%281911%29_-_TIMEA.jpg/800px-A_Story-teller_reciting_from_the_%22Arabian_Nights.%22_%281911%29_-_TIMEA.jpg\n    [demo] transition:Press ↓ now!\n        style: background-color: black\n        subtitle: Or press → if you tried that already\n        transition: You expanded the presentation to a deeper level of detail\n            style: background-color: black\n            Entries ending with … have more detail to explore\n            Pressing ↑ removes the added slides and returns you to the higher level\n            Press ↑ twice now and go back through the first section
+        
