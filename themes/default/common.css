@@ -1,3 +1,12 @@
+/* debug 
+* { border:1px solid blue; }
+
+div { border:1px solid red; }
+td { border:1px solid green; }
+li { border:1px solid yellow; }
+h1,h2,h3,h4 { border:1px solid cyan; }
+*/
+
 html {
     background-color: black; counter-reset: slideidx; 
 }
@@ -9,6 +18,14 @@ body {
     text-shadow: #000011 2px 2px 2px;
 }
 
+col {
+    width: 15%;
+}
+
+col._content {
+    width: 70%;
+}
+
 /* All slides and earlier slides */
 section {
         font-family: 'Oswald', serif;
@@ -16,6 +33,7 @@ section {
         left: 0;
         display: block;
         opacity: 0;
+        padding: 40px;
 
         -webkit-transition: opacity 300ms;
            -moz-transition: opacity 300ms;
@@ -58,19 +76,27 @@ section[aria-selected] {
   }
 
 
-.section-head {
+._section-head {
     text-align: center;
+    padding-bottom: 30px;
 }
 
 section h1 {
     /* The font from Google */
     font-family: 'Oswald', serif;
     font-size: 64px;
-    margin: 32px 0;
 }
 
 section h2 {
     font-size: 32px;
+}
+
+section table {
+    width: 100%;
+}
+
+section td {
+    vertical-align: top;
 }
 
 section a {
@@ -89,29 +115,29 @@ section a:hover {
     color: #f62;
 }
 
-section>ul {
+section ul {
     list-style-type: none;
-    margin: 50px 100px 50px 180px;
+    list-style-position: inside;
 }
 
-.section-head>img {
-    margin: 15px;
-    border: 15px solid black;
+section img {
+    margin: 10px;
+    border: 10px solid black;
 }
 
-.section-head>video {
-    border: 15px solid black;
+section video {
+    border: 10px solid black;
     max-width: 800px;
     max-height: 380px;
 }
 
-section>ul li:before {
-    content: "\2767";
-    padding: 0 15pt;
+section ul li:before {
+    content: "\2767\00a0";
+    padding: 0 0 0 80px;
     font-weight: 200;
 }
 
-section>ul li {
+section ul li {
     text-indent: -80px;
 }
 

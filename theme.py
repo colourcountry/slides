@@ -8,6 +8,7 @@ STYLES = {
     None:               {                                                               'css': 'default/common.css'         },
     'text':             {                   'js': 'default/text.type.js',                                                   },
     'transition':       {'inherit': 'text', 'js': 'default/transition.type.js'      },
+    'p':                {'inherit': 'text', 'js': 'default/p.type.js'               },
     'ol':               {'inherit': 'text', 'js': 'default/ol.type.js',                 'css': 'default/ol.type.css'        },
     'ol-incremental':   {'inherit': 'text', 'js': 'default/ol-incremental.type.js',     'css': 'default/ol.type.css'        },
     'boxes':            {'inherit': 'text', 'js': 'default/boxes.type.js',              'css': 'default/boxes.type.css'     },
@@ -17,7 +18,9 @@ STYLES = {
     'codeblock':        {                   'js': 'default/codeblock.type.js'       },
     'background-image': {                   'js': 'default/background-image.type.js'},
     'side-image':       {                   'js': 'default/side-image.type.js'      },
-    'side-arrow':       {                   'js': 'default/side-arrow.type.js'      },
+    'down-arrow':       {                   'js': 'default/down-arrow.type.js'      },
+    'y-axis':           {                   'js': 'default/y-axis.type.js'          },
+    'x-axis':           {                   'js': 'default/x-axis.type.js'          },
     'style':            {                   'js': 'default/style.type.js'           }
 }
 
@@ -57,7 +60,7 @@ class Theme:
             inherit = 'Ty'
 
         if style in self.js:
-            return '''var x = function(pr, defn){ '''+inherit+'''.call(this, pr, defn) };
+            return '''var x = function(pr, defn){ '''+inherit+'''.call(this, pr, defn); this.c_lass += " '''+style+'''"; };
 x.prototype = new '''+inherit+'''();
 '''+self.js[style]+'''
 Pr.types["'''+style+'''"] = x;

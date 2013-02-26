@@ -70,9 +70,13 @@ Auto-"up" if child entry specified in URL (which would not yield a slide)
 Minify script with cssmin, rjsmin
 Refactor content types into plugins
 Server produces client page w/required plugins, CSS, etc.
+Fix CSS inheritance (currently hacked in text.type.css) -- by using JS inheritance to inject full class ancestry
+Refactor object-view to use 9-cell table
 ---
+Think about "transition:" - only default type, not boxes/bubbles/etc? perhaps this is desirable?
 Bug: incremental step 0 shows all rather than hiding all
-Fix CSS inheritance (currently hacked in text.type.css) --how?
+Replace internal 'class=x' with 'class=_x'
+Work out how to do child-properties neatly (item colour, bar height, etc.) Unrolling grandchildren seems nicest but is it tedious?
 Server can inline *everything* (images, objects) for completely stand-alone presentation
 Allow slides to have multiple parents: if a slide has already been unrolled somewhere else, link but do not unroll again
 Allow hash-urls to be slide keys, not just ids

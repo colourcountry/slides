@@ -53,32 +53,18 @@ Presentable
             Swap between any of these views dynamically
             Most layouts are really pure text
                 unordered or ordered list
-                    1
-                    2
-                    3
-                    4
-                process:process
-                    1
-                    2
-                    3
-                    4
-                grid:grid
-                    1
-                    2
-                    3
-                    4
-                pyramid:pyramid
-                    1
-                    2
-                    3
-                    4
+                    Crackers
+                    Biscuits
+                    Cookies
+                    Brownies
             Typed entries provide more layout options
-                Arrows
-                    side-arrow:Business value
-                    1
-                    2
-                    3
-                    4
+                p:Side arrows
+                    y-axis:Crunchy
+                    down-arrow:Gooey
+                    Crackers
+                    Biscuits
+                    Cookies
+                    Brownies
                 Images
                     side-image:http://placekitten.com/200/200
                     1
