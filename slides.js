@@ -14,7 +14,7 @@
   };
 
   Dz.init = function(pr) {
-    document.body.className = "loaded";
+    document.body.className = "_loaded";
     this.pr = pr;
     this.slides = Array.prototype.slice.call($$("section"));
     console.debug('init found '+this.slides.length+' slides: '+this.slides);
@@ -88,6 +88,10 @@
       aEvent.preventDefault();
       this.toggleView();
     }
+    if (aEvent.keyCode == 82) { // r
+      aEvent.preventDefault();
+      this.goRandom();
+    }
   }
 
   /* Touch Events */
@@ -123,10 +127,10 @@
 
   Dz.setupView = function() {
     document.body.addEventListener("click", function ( e ) {
-      if (!Dz.html.classList.contains("view")) return;
+      if (!Dz.html.classList.contains("_view")) return;
       if (!e.target || e.target.nodeName != "SECTION") return;
 
-      Dz.html.classList.remove("view");
+      Dz.html.classList.remove("_view");
       Dz.setCursor(e.getAttribute("id"));
     }, false);
   }
@@ -174,6 +178,8 @@
       this.goStart();
     if (argv[0] === "END" && argc === 1)
       this.goEnd();
+    if (argv[0] === "RANDOM" && argc === 1)
+      this.goRandom();
     if (argv[0] === "TOGGLE_CONTENT" && argc === 1)
       this.toggleContent();
     if (argv[0] === "SET_CURSOR" && argc === 2)
@@ -237,6 +243,8 @@
         newidx = 1;
     }
 
+    $('#slide-count').innerHTML = newidx+'\u00a0/\u00a0'+this.slides.length;
+
     this.setProgress(newidx, newstep);
     if (newidx != this.idx) {
       this.setSlide(newidx);
@@ -255,7 +263,7 @@
     }
     if (this.step == 0) {
       this.setCursorByIndex(this.idx - 1,
-                     this.slides[this.idx - 2].$$('.incremental > *').length);
+                     this.slides[this.idx - 2].$$('._incremental > *').length);
     } else {
       this.setCursorByIndex(this.idx, this.step - 1);
     }
@@ -263,10 +271,10 @@
 
   Dz.forward = function() {
     if (this.idx >= this.slides.length &&
-        this.step >= this.slides[this.idx - 1].$$('.incremental > *').length) {
+        this.step >= this.slides[this.idx - 1].$$('._incremental > *').length) {
         return;
     }
-    if (this.step >= this.slides[this.idx - 1].$$('.incremental > *').length) {
+    if (this.step >= this.slides[this.idx - 1].$$('._incremental > *').length) {
       this.setCursorByIndex(this.idx + 1, 0);
     } else {
       this.setCursorByIndex(this.idx, this.step + 1);
@@ -279,14 +287,19 @@
 
   Dz.goEnd = function() {
     var lastIdx = this.slides.length;
-    var lastStep = this.slides[lastIdx - 1].$$('.incremental > *').length;
-    this.setCursorByIndex(lastIdx - 1, lastStep);
+    var lastStep = this.slides[lastIdx - 1].$$('._incremental > *').length;
+    this.setCursorByIndex(lastIdx, lastStep);
+  }
+
+  Dz.goRandom = function() {
+    var randIdx = Math.floor(Math.random()*this.slides.length);
+    this.setCursorByIndex(randIdx + 1, 0);
   }
 
   Dz.toggleView = function() {
-    this.html.classList.toggle("view");
+    this.html.classList.toggle("_view");
 
-    if (this.html.classList.contains("view")) {
+    if (this.html.classList.contains("_view")) {
       $("section[aria-selected]").scrollIntoView(true);
     }
   }
@@ -309,7 +322,7 @@
     }
     if (next) {
       next.setAttribute("aria-selected", "true");
-      if (this.html.classList.contains("view")) {
+      if (this.html.classList.contains("_view")) {
         next.scrollIntoView();
       }
       var video = next.$("video");
@@ -330,18 +343,18 @@
 
   Dz.setIncremental = function(aStep) {
     this.step = aStep;
-    var old = this.slides[this.idx - 1].$('.incremental > *[aria-selected]');
+    var old = this.slides[this.idx - 1].$('._incremental > *[aria-selected]');
     if (old) {
       old.removeAttribute('aria-selected');
     }
-    var incrementals = $$('.incremental');
+    var incrementals = $$('._incremental');
     if (this.step <= 0) {
       $$.forEach(incrementals, function(aNode) {
         aNode.removeAttribute('active');
       });
       return;
     }
-    var next = this.slides[this.idx - 1].$$('.incremental > *')[this.step - 1];
+    var next = this.slides[this.idx - 1].$$('._incremental > *')[this.step - 1];
     if (next) {
       next.setAttribute('aria-selected', true);
       next.parentNode.setAttribute('active', true);
@@ -371,7 +384,7 @@
   
   Dz.setProgress = function(aIdx, aStep) {
     var slide = this.slides[aIdx-1];
-    var steps = slide.$$('.incremental > *').length + 1,
+    var steps = slide.$$('._incremental > *').length + 1,
         slideSize = 100 / (this.slides.length - 1),
         stepSize = slideSize / steps;
     this.progressBar.style.width = ((aIdx - 1) * slideSize + aStep * stepSize) + '%';
@@ -390,6 +403,8 @@ Dz.reinit = function() {
     var cur_slide = this.slides[this.idx-1];
 
     this.slides = Array.prototype.slice.call($$("section"));
+    this.pr.update_save_url();
+
     console.debug('reinit found '+this.slides.length+' slides: '+this.slides);
 
     for (var i=0; i<this.slides.length; i++) {

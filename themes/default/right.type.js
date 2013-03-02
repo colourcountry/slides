@@ -1,5 +1,5 @@
 x.prototype.section_right = function(parent) {
-    return '<img src="'+this.html(this.defn.n)+'">';
+    return this.value();
 };
 
 x.prototype.suppress_child = true;

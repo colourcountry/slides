@@ -1,0 +1,19 @@
+figure.x {
+    background-color: black;
+    width: 100%;
+    height: 100%;
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: -1;
+}
+
+figure.x>* {
+    width: 100%; height: 100%;
+}
+
+figure.x figcaption {
+    margin: 70px;
+    font-size: 50px;
+}
+

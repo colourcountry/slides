@@ -50,9 +50,8 @@ def getOffline(name):
 
     thisSlide = slide.Slide.get(name)
     json = thisSlide.json( unroll=unroll )
-    styles = thisSlide.styles( unroll=unroll )
 
-    return presentation.build(name, json, styles)
+    return presentation.build(name, json)
 
 
 @bottle.route('/presentation/<name>')

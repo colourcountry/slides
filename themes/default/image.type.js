@@ -1,5 +1,8 @@
-x.prototype.section_head = function(parent) {
-    return '<img style="max-width: 800px;max-height: 380px;" src="'+this.html(this.defn.n)+'">';
+x.prototype.value = function() {
+    return '<img src="'+this.html(this.defn.n)+'">'
 };
 
-x.prototype.suppress_child = true;
+x.prototype.toString = function() {
+    return "[image-type "+this.get_class()+" value="+this.value()+"]";
+}
+

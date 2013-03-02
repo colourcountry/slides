@@ -32,3 +32,8 @@
   var $$ = (HTMLElement.prototype.$$ = function(aQuery) {
     return this.querySelectorAll(aQuery);
   }).bind(document);
+
+  $$.forEach = function(nodeList, fun) {
+    Array.prototype.forEach.call(nodeList, fun);
+  }
+

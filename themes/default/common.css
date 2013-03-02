@@ -1,4 +1,4 @@
-/* debug 
+/* debug
 * { border:1px solid blue; }
 
 div { border:1px solid red; }
@@ -18,22 +18,27 @@ body {
     text-shadow: #000011 2px 2px 2px;
 }
 
-col {
-    width: 15%;
+col._left {
+    width: 10%;
 }
 
-col._content {
-    width: 70%;
+col._object {
+    width: 85%;
+}
+
+col._right {
+    width: 5%;
 }
 
 /* All slides and earlier slides */
 section {
-        font-family: 'Oswald', serif;
+        font-family: 'Serif', serif;
         font-size: 30px;
         left: 0;
         display: block;
         opacity: 0;
         padding: 40px;
+        overflow: hidden;
 
         -webkit-transition: opacity 300ms;
            -moz-transition: opacity 300ms;
@@ -57,17 +62,6 @@ section[aria-selected] {
 
   
 
-  /* Incremental elements */
-
-  /* By default, visible */
-  .incremental > * { opacity: 1; }
-
-  /* The current item */
-  .incremental > *[aria-selected] { opacity: 1; }
-
-  /* The items to-be-selected */
-  .incremental > *[aria-selected] ~ * { opacity: 0; }
-
   /* The progressbar, at the bottom of the slides, show the global
      progress of the presentation. */
   #progress-bar {
@@ -83,12 +77,12 @@ section[aria-selected] {
 
 section h1 {
     /* The font from Google */
-    font-family: 'Oswald', serif;
-    font-size: 64px;
+    font-size: 56px;
 }
 
 section h2 {
     font-size: 32px;
+    margin-top: 20px;
 }
 
 section table {
@@ -106,7 +100,7 @@ section a {
 
 section a:after {
     color: #f62;
-    content: " \21e3";
+    content: "\00a0\21e3";
     font-size: 50%;
     font-weight; bold;
 }
@@ -115,30 +109,15 @@ section a:hover {
     color: #f62;
 }
 
-section ul {
-    list-style-type: none;
-    list-style-position: inside;
-}
 
 section img {
-    margin: 10px;
-    border: 10px solid black;
+    border: 5px solid black;
 }
 
 section video {
     border: 10px solid black;
     max-width: 800px;
     max-height: 380px;
-}
-
-section ul li:before {
-    content: "\2767\00a0";
-    padding: 0 0 0 80px;
-    font-weight: 200;
-}
-
-section ul li {
-    text-indent: -80px;
 }
 
 section blockquote {
@@ -161,25 +140,43 @@ section pre {
     background-color: black;
     color: #8f4;
     font-size: 20px;
-    padding: 20px 0 20px 0;
+    margin: 20px 0 20px 0;
+    padding: 10px;
+    overflow: hidden;
 }
 
-section figure {
-    background-color: black;
-    width: 100%;
-    height: 100%;
-    position: absolute;
-    top: 0;
-    left: 0;
-    z-index: -1;
+/* Common styles for object slides (most of them) */
+
+._object ul {
+    list-style-type: none;
+    list-style-position: inside;
 }
 
-section figure>* {
-    width: 100%; height: 100%;
+._object ul li:before {
+    content: "\2767\00a0";
+    font-weight: 200;
 }
 
-section figcaption {
-    margin: 70px;
-    font-size: 50px;
+._object ul li {
+    margin: 10px 0;
+    padding: 0 0 0 50px;
+    text-indent: -50px;
 }
 
+._left {
+    vertical-align: middle;
+    text-align: right;
+}
+
+._right {
+    vertical-align: middle;
+    text-align: left;
+}
+
+._before {
+    text-align: center;
+}
+
+._after {
+    text-align: center;
+}

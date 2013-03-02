@@ -5,6 +5,7 @@ import slide
 
 MINIMIZE = False
 
+SERVER_URL = "http://localhost:8080"
 THEME = theme.Theme()
 
 def identity(x):
@@ -31,36 +32,44 @@ CORE = jsmin(open('core.js','r').read());
 TYPES = jsmin(open('types.js','r').read());
 CORE_CSS = cssmin(open('core.css','r').read());
 
+ALL_CSS = CORE_CSS
+ALL_JS = HELPERS + SLIDES + CORE + TYPES;
 
-def build(rootId, json, styles):
-    css = CORE_CSS;
-    js = HELPERS + SLIDES + CORE + TYPES;
-    styles.add('text')
+ALL_CSS += THEME.getCss(None)
+for style in THEME.styles:
+    ALL_CSS += THEME.getCss(style)
+    ALL_JS += THEME.getJs(style)
 
-    css += THEME.getCss(None)
-    for style in THEME.styles:
-        # FIXME: exclude unless required by inheritance
-        css += THEME.getCss(style)
-        js += THEME.getJs(style)
+
+
+def build(rootId, cacheJson):
+    css = ALL_CSS;
+    js = ALL_JS;
 
     output = '''<!DOCTYPE html>
 <html>
     <head>
-        <title>Slides</title>
-        <style>
+        <title id="title">Slides</title>
+        <style id="styles">
 %s
         </style>
-        <script>
+        <script id="scripts">
 %s
-Pr.cache = %s;
 Pr.root_id = "%s";
+Pr.server_url = %s;
+        </script>
+        <script id="cache">
+/* this cache was delivered from server */
+Pr.cache = %s;
         </script>
     </head>
     <body id="body">
+        <div id="slide-count"></div>
+        <div id="save-button"><a href="#1.0">Save</a></div>
         <div id="slide-container"></div>
         <div id="progress-bar"></div>
     </body></html>
-''' % (css, js, json, rootId)
+''' % (css, js, rootId, json.dumps(SERVER_URL), cacheJson)
     return output
     
 
@@ -78,5 +87,5 @@ if __name__=='__main__':
     slide.Slide.readText(src)
     root = slide.Slide.findRoot()
 
-    print( build( root.id, root.json(), root.styles() ) )
-    
+    print( build( root.id, root.json() ) )
+

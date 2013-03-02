@@ -1,0 +1,19 @@
+figure.x {
+    background-color: red;
+    position: absolute;
+    top: 50px;
+    left: 500px;
+    width: 400px;
+    text-align: center;
+    z-index: -1;
+
+        -webkit-transform: rotate(45deg);
+           -moz-transform: rotate(45deg);
+            -ms-transform: rotate(45deg);
+                transform: rotate(45deg);
+}
+
+figure.x figcaption {
+    font-size: 40px;
+}
+

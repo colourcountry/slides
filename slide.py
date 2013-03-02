@@ -104,7 +104,7 @@ class Slide:
         else:
             self.key = None
 
-        match = re.match('([a-z-]+): *(.*)', niceName)
+        match = re.match('([ a-z-]+): *(.*)', niceName)
         if match:
             self.style = match.group(1)
             niceName = match.group(2)

@@ -1,115 +1,112 @@
-Presentable
+This is a Presentable
     [introduction] Building on tradition
         A slide deck is a prepared sequence of visuals
             Tools like PowerPoint reimplement older technologies (transparencies, OHP)
             Even Web-based slide frameworks (rvl.io, prezi.com) have the same heritage
-        bubbles:Need to second-guess your audience
+        incremental bubbles:Need to second-guess your audience
             What do they already know?
             How much detail do they need?
             What views or visual aids will help them?
             What might they ask at the end?
-        boxes:Coping strategies are ingrained
+        incremental boxes:Coping strategies are ingrained
             Fleshing out slides with notes
             Adding extra "backup" slides at the end
             Ditching the visuals entirely
     transition:We need to rediscover an older tradition
         style: color: #f62;
-        background-image: http://upload.wikimedia.org/wikipedia/commons/thumb/1/12/A_Story-teller_reciting_from_the_%22Arabian_Nights.%22_%281911%29_-_TIMEA.jpg/800px-A_Story-teller_reciting_from_the_%22Arabian_Nights.%22_%281911%29_-_TIMEA.jpg
-    [demo] transition:Press ↓ now!
-        style: background-color: black
+        background image: http://upload.wikimedia.org/wikipedia/commons/thumb/1/12/A_Story-teller_reciting_from_the_%22Arabian_Nights.%22_%281911%29_-_TIMEA.jpg/800px-A_Story-teller_reciting_from_the_%22Arabian_Nights.%22_%281911%29_-_TIMEA.jpg
+    [demo] transition p:Press ↓ now!
+        background: black
         subtitle: Or press → if you tried that already
         transition: You expanded the presentation to a deeper level of detail
-            style: background-color: black
-            Entries ending with … have more detail to explore
-            Pressing ↑ removes the added slides and returns you to the higher level
+            background: black
+            Entries with the ⇣ symbol have more detail to explore
+            ↓ inserts slides with this content
+            ↑ removes the added slides and returns you to the higher level
+            Or keep the added slides and step through with ← →
             Press ↑ twice now and go back through the first section
-    Presentation is really storytelling
+    Presentation is storytelling
         What does a storyteller do?
             Draws on a body of knowledge
             Picks out a meaningful path
-            Approaches the same topic in different ways
             Explores topics deeply, goes off on tangents, skips sections
             Encourages the audience to ask questions
             Evolves the story through the telling
             Puts on a memorable event
-        transition:So a presentation tool should be a storytelling aid
+        transition p:So a presentation tool is a storytelling aid
+            subtitle:
         ol:What does a storytelling aid need?
             A body of knowledge to draw from
-            An intuitive way to navigate
-            The ability to switch between views of content
-            Tight feedback loops with the audience
+            A way to navigate this knowledge
+            Flexibility to respond to the audience
             Impactful presentation
-    ol:How Presentable does it
-        The body of knowledge is a mind map
-            Trivially simple structure
-            Tree structure or mind map composed of entries
-            Any text entry can have children
-            Master set stored on server
-            Pull off any subtree and save as a single HTML file
-        Tree navigation provides wayfinding
+    ol:Implementing the idea
+        Body of knowledge → mind map
+            Tree structure composed of entries
+            Any entry can have children
+            Entries have an associated type for styling
+        Wayfinding → tree navigation
             Skip over subtrees
             Reorder children (not yet)
-        Views provide different visual effects
-            Swap between any of these views dynamically
-            Most layouts are really pure text
-                unordered or ordered list
-                    Crackers
-                    Biscuits
-                    Cookies
-                    Brownies
-            Typed entries provide more layout options
-                p:Side arrows
-                    y-axis:Crunchy
-                    down-arrow:Gooey
-                    Crackers
-                    Biscuits
-                    Cookies
-                    Brownies
-                Images
-                    side-image:http://placekitten.com/200/200
-                    1
-                    2
-                    3
-                    4
-                grid:Combine types with views
-                    flash:40% more learning!
-                    side-arrow:Business value
-                    bottom-arrow:Mendacity
-                    1
-                    2
-                    3
-                    4
-        Feedback
+        Feedback → navigate, edit and save
             Draw down more information from the Net if online
             No need for "just in case" slides
             Edit slides during the performance
             Save from the browser
             Submit changes to an online repository
-        HTML5 provides engaging visuals
+        Impact → HTML5
             CSS3 provides rich styles and transitions
             Display images, video
-            Canvas allows the client to build diagrams
-    How to use Presentable
-        Server side
-            BoK is a single text file
+            Client can build diagrams with CSS and SVG
+            Different views → layouts and types
+                Pure text layouts
+                    banana split
+                    apple pie
+                    cheshire cheese
+                    carrot soup
+                Typed entries
+                    y-axis:sweet
+                    down-arrow:savoury
+                    banana split
+                    apple pie
+                    cheshire cheese
+                    carrot soup
+                transition: Typed entries
+                    right image:http://placekitten.com/200/200
+                    Don't look at the kitten
+                    Pay attention to the presentation
+                transition grid: Typed entries
+                    flash:+40%!
+                    y-axis:sweetness
+                    x-axis:temperature
+                    ne: apple pie
+                    nw: banana split
+                    se: carrot soup
+                    sw: cheshire cheese
+    How to use Presentables
+        A Presentable is a single self-contained HTML page
+            All CSS and JS baked in
+            Open from server or local file
+            Right click on "Save" to save a copy for sharing
+            Download extra slides with ↓
+            Saved copies include all slides you inserted
+        The Presentable Server
+            Builds Presentables on demand
+            Import BoK from a single text file
                 codeblock: Presentable\n    Building on tradition\n        A slide deck is a prepared sequence of visuals\n            Tools like PowerPoint reimplement older technologies (transparencies, OHP)\n            Even Web-based slide frameworks (rvl.io, prezi.com) have the same heritage\n        bubbles:Need to second-guess your audience\n            What do they already know?\n            How much detail do they need?\n            What views or visual aids will help them?\n            What might they ask at the end?
                 One line per entry (slide or list item)
                 Simple to edit
             Python mini-server
                 codeblock: ./server.py bok.txt
                 Uses bottle.py
-            Or rip the HTML directly
-                codeblock: ./presentation.py bok.txt > /media/sdcard/my_slides.html
-        Client side
             Download one slide
                 codeblock: http://server/presentation/<id>
-                Navigating "down" fetches more with AJAX
+                Recommended starting point when online
             Download whole tree
                 codeblock: http://server/offline/<id>
-                Right click, "Save As"...
-                Navigating "up" gets the parent tree
-            Open a presentation from a local file
-                All required CSS, JS baked in
+                Pressing ↑ at root switches to a new Presentable based on the parent tree
+            Or rip the HTML directly
+                codeblock: ./presentation.py bok.txt > /media/sdcard/my_slides.html
     Future plans    
         Bake in images and videos
         More layouts to choose from
@@ -117,7 +114,7 @@ Presentable
         Super-rich types
         BoK as mind map software
         BoK as research tool
-    Summary
-        image: http://placekitten.com/800/600
-        subtitle:djl@colourcountry.net
+    transition:
+        before image: http://placekitten.com/650/350
+        after: djl@colourcountry.net
         
