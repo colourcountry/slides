@@ -54,7 +54,7 @@ Pr.update_save_url = function() {
     };
 
     var std_head = '<!DOCTYPE html><html><head><title id="title">?</title><style id="styles">'+$('#styles').innerHTML+'</style><script id="scripts">'+$('#scripts').innerHTML+'</'+'script>';
-    var std_body = '<body id="body"><div id="slide-count"></div><div id="new-button"><a href="#1.0">New</a></div><div id="save-button"><a href="#1.0">Save</a></div><div id="slide-container"></div><div id="progress-bar"></div></body>';
+    var std_body = '<body id="body"><div id="slide-count"></div><div id="new-button"><a href="#1.0">New</a></div><div id="save-button"><a href="#1.0">Save</a></div><div id="slide-container"></div><div id="progress-bar"></div><div id="edit"></div></body>';
     var save_url = '' + std_head;
     if (Pr.server_url) {
         save_url += '<script id="server-url">Pr.server_url = '+JSON.stringify(Pr.server_url)+';</'+'script>';
@@ -262,6 +262,47 @@ Pr.unroll_deck = function(id, cb) {
         }
     } else {
         cb( this.cache[id] );
+    }
+};
+
+Pr.populate_editor = function(node, root_id, highlight_id) {
+    var div = document.createElement("div");
+    var type = document.createElement("span");
+    var input = document.createElement("input");
+    if (typeof this.cache[root_id] == 'undefined') {
+        var typeText = document.createTextNode('not available');
+        type.appendChild(typeText);
+        div.appendChild(type);
+    } else {
+        if (typeof this.cache[root_id].s == 'undefined') {
+            var typeText = document.createTextNode(this.default_type);
+        } else {
+            var typeText = document.createTextNode(this.cache[root_id].s);
+        }
+        type.appendChild(typeText);
+        div.appendChild(type);
+        input.value = this.cache[root_id].n;
+        if (root_id == highlight_id) {
+            input.addAttribute("class","_highlight");
+        }
+        div.appendChild(input);
+        if (typeof this.cache[root_id].c != 'undefined') {
+            for (var i=0; i<this.cache[root_id].c.length; i++) {
+                this.populate_editor(div, this.cache[root_id].c[i], highlight_id);
+            }
+        }
+        node.appendChild(div);
+    }
+};
+
+Pr.edit = function(id) {
+    var edit_box = $('#edit');
+    if (edit_box.style.visibility == 'hidden') {
+        this.populate_editor(edit_box, this.root_id, id);
+        edit_box.style.visibility = 'visible';
+    } else {
+        edit_box.style.visibility = 'hidden';
+        edit_box.innerHTML = '';
     }
 };
 

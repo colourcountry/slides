@@ -71,6 +71,7 @@ Pr.cache = %s;
         <div id="save-button"><a href="#1.0">Save</a></div>
         <div id="slide-container"></div>
         <div id="progress-bar"></div>
+        <div id="edit"></div>
     </body></html>
 ''' % (css, js, rootId, json.dumps(SERVER_URL), cacheJson)
     return output

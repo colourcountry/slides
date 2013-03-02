@@ -88,6 +88,7 @@ Slide count
 Rich content - iframe (eg google maps)
 Increase resolution to 1600x1200
 'New' button
+Press 'e' or 'escape' for edit box -- just view source for now
 ---
 Edit on client and save locally
 Bug: last slide missing "after" although script tries to add it

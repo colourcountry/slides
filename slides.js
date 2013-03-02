@@ -48,6 +48,9 @@
       || aEvent.shiftKey) {
       return;
     }
+
+    if ($('#edit').style.visibility == 'hidden') {
+
     if ( aEvent.keyCode == 37 // left arrow
       || aEvent.keyCode == 33 // page up
     ) {
@@ -80,6 +83,10 @@
       aEvent.preventDefault();
       this.toggleContent();
     }
+    if (aEvent.keyCode == 69) { // e
+      aEvent.preventDefault();
+      this.edit();
+    }
     if (aEvent.keyCode == 70) { // f
       aEvent.preventDefault();
       this.goFullscreen();
@@ -92,6 +99,14 @@
       aEvent.preventDefault();
       this.goRandom();
     }
+
+    }
+
+    if (aEvent.keyCode == 27) { // escape
+      aEvent.preventDefault();
+      this.edit();
+    }
+
   }
 
   /* Touch Events */
@@ -477,3 +492,8 @@ Dz.out = function() {
     }
 
 };    
+
+Dz.edit = function() {
+    var deck_id = this.slides[this.idx-1].getAttribute('id');
+    this.pr.edit(deck_id);
+}
