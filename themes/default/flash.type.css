@@ -1,9 +1,9 @@
 figure.x {
     background-color: red;
     position: absolute;
-    top: 50px;
-    left: 500px;
-    width: 400px;
+    top: 100px;
+    left: 1000px;
+    width: 800px;
     text-align: center;
     z-index: -1;
 
@@ -14,6 +14,6 @@ figure.x {
 }
 
 figure.x figcaption {
-    font-size: 40px;
+    font-size: 80px;
 }
 

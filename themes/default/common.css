@@ -1,3 +1,5 @@
+@import url("http://fonts.googleapis.com/css?family=Overlock");
+
 /* debug
 * { border:1px solid blue; }
 
@@ -13,9 +15,9 @@ html {
 
 body {
     background-color: #002a44;
-    border-radius: 12px;
+    border-radius: 24px;
     color: white;
-    text-shadow: #000011 2px 2px 2px;
+    text-shadow: #000011 4px 4px 4px;
 }
 
 col._left {
@@ -32,12 +34,12 @@ col._right {
 
 /* All slides and earlier slides */
 section {
-        font-family: 'Serif', serif;
-        font-size: 30px;
+        font-family: 'Overlock', serif;
+        font-size: 60px;
         left: 0;
         display: block;
         opacity: 0;
-        padding: 40px;
+        padding: 80px;
         overflow: hidden;
 
         -webkit-transition: opacity 300ms;
@@ -65,24 +67,25 @@ section[aria-selected] {
   /* The progressbar, at the bottom of the slides, show the global
      progress of the presentation. */
   #progress-bar {
-    height: 2px;
+    height: 4px;
     background: #AAA;
   }
 
 
 ._section-head {
     text-align: center;
-    padding-bottom: 30px;
+    padding-bottom: 60px;
 }
 
 section h1 {
     /* The font from Google */
-    font-size: 56px;
+    font-size: 100px;
 }
 
 section h2 {
-    font-size: 32px;
-    margin-top: 20px;
+    font-size: 64px;
+    margin-top: 40px;
+    color: #4cf;
 }
 
 section table {
@@ -110,21 +113,16 @@ section a:hover {
 }
 
 
-section img {
-    border: 5px solid black;
-}
-
-section video {
+section img, section iframe, section video {
     border: 10px solid black;
-    max-width: 800px;
-    max-height: 380px;
+    margin: 10px;
 }
 
 section blockquote {
     background-color: black;
     color: white;
-    font-size: 60px;
-    padding: 50px;
+    font-size: 120px;
+    padding: 100px;
 }
 
 section blockquote:before {
@@ -139,9 +137,9 @@ section pre {
     text-align: left;
     background-color: black;
     color: #8f4;
-    font-size: 20px;
-    margin: 20px 0 20px 0;
-    padding: 10px;
+    font-size: 40px;
+    margin: 40px 0 40px 0;
+    padding: 20px;
     overflow: hidden;
 }
 
@@ -155,12 +153,13 @@ section pre {
 ._object ul li:before {
     content: "\2767\00a0";
     font-weight: 200;
+    color: #4cf;
 }
 
 ._object ul li {
-    margin: 10px 0;
-    padding: 0 0 0 50px;
-    text-indent: -50px;
+    margin: 20px 0;
+    padding: 0 0 0 100px;
+    text-indent: -100px;
 }
 
 ._left {
@@ -175,8 +174,10 @@ section pre {
 
 ._before {
     text-align: center;
+    max-height: 600px;
 }
 
 ._after {
     text-align: center;
+    max-height: 600px;
 }

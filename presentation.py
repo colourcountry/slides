@@ -26,25 +26,27 @@ if MINIMIZE:
         pass
 
 
-HELPERS = jsmin(open('helpers.js','r').read());
-SLIDES = jsmin(open('slides.js','r').read());
-CORE = jsmin(open('core.js','r').read());
-TYPES = jsmin(open('types.js','r').read());
-CORE_CSS = cssmin(open('core.css','r').read());
+HELPERS = jsmin(open('helpers.js','r').read())
+SLIDES = jsmin(open('slides.js','r').read())
+CORE = jsmin(open('core.js','r').read())
+TYPES = jsmin(open('types.js','r').read())
+CORE_CSS = cssmin(open('core.css','r').read())
 
-ALL_CSS = CORE_CSS
-ALL_JS = HELPERS + SLIDES + CORE + TYPES;
+ALL_CSS = ''
+ALL_JS = HELPERS + SLIDES + CORE + TYPES
 
 ALL_CSS += THEME.getCss(None)
 for style in THEME.styles:
     ALL_CSS += THEME.getCss(style)
     ALL_JS += THEME.getJs(style)
 
+ALL_CSS += CORE_CSS
+
 
 
 def build(rootId, cacheJson):
-    css = ALL_CSS;
-    js = ALL_JS;
+    css = ALL_CSS
+    js = ALL_JS
 
     output = '''<!DOCTYPE html>
 <html>
@@ -56,15 +58,16 @@ def build(rootId, cacheJson):
         <script id="scripts">
 %s
 Pr.root_id = "%s";
-Pr.server_url = %s;
         </script>
         <script id="cache">
 /* this cache was delivered from server */
+Pr.server_url = %s;
 Pr.cache = %s;
         </script>
     </head>
     <body id="body">
         <div id="slide-count"></div>
+        <div id="new-button"><a href="#1.0">New</a></div>
         <div id="save-button"><a href="#1.0">Save</a></div>
         <div id="slide-container"></div>
         <div id="progress-bar"></div>

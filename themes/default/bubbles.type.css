@@ -1,15 +1,15 @@
 .x div div {
-    border-radius: 56px;
-    padding: 24px 24px 24px 32px;
-    border: 4px solid black;
+    border-radius: 100px;
+    padding: 48px 48px 48px 64px;
+    border: 8px solid black;
     background-color: #240;
-    width: 300px;
+    width: 600px;
     position: absolute;
 
-    background-image: radial-gradient(50px 50px, circle cover, #373 2%, #030 100%);
-    background-image: -o-radial-gradient(50px 50px, circle cover, #030 100%);
-    background-image: -ms-radial-gradient(50px 50px, circle cover, #373 2%, #030 100%);
-    background-image: -moz-radial-gradient(50px 50px, circle cover, #373 2%, #030 100%);
-    background-image: -webkit-radial-gradient(50px 50px, circle cover, #373 2%, #030 100%);
+    background-image: radial-gradient(100px 100px, circle cover, #373 2%, #030 100%);
+    background-image: -o-radial-gradient(100px 100px, circle cover, #030 100%);
+    background-image: -ms-radial-gradient(100px 100px, circle cover, #373 2%, #030 100%);
+    background-image: -moz-radial-gradient(100px 100px, circle cover, #373 2%, #030 100%);
+    background-image: -webkit-radial-gradient(100px 100px, circle cover, #373 2%, #030 100%);
 
 }

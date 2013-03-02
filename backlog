@@ -85,7 +85,12 @@ Show random slide (press 'r' or send message 'RANDOM')
 Bug: going back to incremental step 0 shows all rather than hiding all
 Replace internal 'class=x' with 'class=_x' (loaded, view)
 Slide count
+Rich content - iframe (eg google maps)
+Increase resolution to 1600x1200
+'New' button
 ---
+Edit on client and save locally
+Bug: last slide missing "after" although script tries to add it
 Bug: following save button (not saving it) yields broken presentation
 Work out how to do child-properties neatly (item colour, bar height, etc.) Unrolling grandchildren seems nicest but is it tedious?
 Server can inline *everything* (images, objects) for completely stand-alone presentation

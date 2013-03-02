@@ -1,8 +1,13 @@
 This is a Presentable
-    [introduction] Building on tradition
-        A slide deck is a prepared sequence of visuals
-            Tools like PowerPoint reimplement older technologies (transparencies, OHP)
-            Even Web-based slide frameworks (rvl.io, prezi.com) have the same heritage
+    [introduction] What's wrong with presentations
+        A presentation is a fixed sequence of visuals
+            Tools like PowerPoint reimplement older technologies
+                subtitle: transparencies, overhead projection...
+                With physical slides, manipulating the deck is cumbersome
+            Web-based slide frameworks have the same heritage
+                subtitle: rvl.io, prezi.com...
+                Still expect you to prepare your presentation beforehand
+                Requirement to be online is not always realistic
         incremental bubbles:Need to second-guess your audience
             What do they already know?
             How much detail do they need?
@@ -12,17 +17,16 @@ This is a Presentable
             Fleshing out slides with notes
             Adding extra "backup" slides at the end
             Ditching the visuals entirely
-    transition:We need to rediscover an older tradition
-        style: color: #f62;
-        background image: http://upload.wikimedia.org/wikipedia/commons/thumb/1/12/A_Story-teller_reciting_from_the_%22Arabian_Nights.%22_%281911%29_-_TIMEA.jpg/800px-A_Story-teller_reciting_from_the_%22Arabian_Nights.%22_%281911%29_-_TIMEA.jpg
+        We need to rediscover an older tradition
+            style: color: #f62;
+            background image: http://upload.wikimedia.org/wikipedia/commons/thumb/1/12/A_Story-teller_reciting_from_the_%22Arabian_Nights.%22_%281911%29_-_TIMEA.jpg/800px-A_Story-teller_reciting_from_the_%22Arabian_Nights.%22_%281911%29_-_TIMEA.jpg
     [demo] transition p:Press ↓ now!
         background: black
         subtitle: Or press → if you tried that already
-        transition: You expanded the presentation to a deeper level of detail
+        transition: You expanded the presentation!
             background: black
-            Entries with the ⇣ symbol have more detail to explore
-            ↓ inserts slides with this content
-            ↑ removes the added slides and returns you to the higher level
+            Where you see the ⇣ symbol, press ↓ to insert slides with more detail
+            ↑ removes the added slides and returns to the higher level
             Or keep the added slides and step through with ← →
             Press ↑ twice now and go back through the first section
     Presentation is storytelling
@@ -33,59 +37,60 @@ This is a Presentable
             Encourages the audience to ask questions
             Evolves the story through the telling
             Puts on a memorable event
-        transition p:So a presentation tool is a storytelling aid
-            subtitle:
-        ol:What does a storytelling aid need?
-            A body of knowledge to draw from
-            A way to navigate this knowledge
-            Flexibility to respond to the audience
-            Impactful presentation
-    ol:Implementing the idea
-        Body of knowledge → mind map
-            Tree structure composed of entries
-            Any entry can have children
-            Entries have an associated type for styling
-        Wayfinding → tree navigation
-            Skip over subtrees
-            Reorder children (not yet)
-        Feedback → navigate, edit and save
-            Draw down more information from the Net if online
-            No need for "just in case" slides
-            Edit slides during the performance
-            Save from the browser
-            Submit changes to an online repository
-        Impact → HTML5
-            CSS3 provides rich styles and transitions
-            Display images, video
-            Client can build diagrams with CSS and SVG
-            Different views → layouts and types
-                Pure text layouts
-                    banana split
-                    apple pie
-                    cheshire cheese
-                    carrot soup
-                Typed entries
-                    y-axis:sweet
-                    down-arrow:savoury
-                    banana split
-                    apple pie
-                    cheshire cheese
-                    carrot soup
-                transition: Typed entries
-                    right image:http://placekitten.com/200/200
-                    Don't look at the kitten
-                    Pay attention to the presentation
-                transition grid: Typed entries
-                    flash:+40%!
-                    y-axis:sweetness
-                    x-axis:temperature
-                    ne: apple pie
-                    nw: banana split
-                    se: carrot soup
-                    sw: cheshire cheese
+        transition p:A presentation tool is...
+            before image:http://upload.wikimedia.org/wikipedia/commons/thumb/1/11/Edda.jpg/443px-Edda.jpg
+            after: a storytelling aid
+        grid:What does a storyteller need?
+            nw:A body of knowledge to draw from
+            ne:A way to navigate this knowledge
+            sw:Flexibility to respond to the audience
+            se:Engaging visuals
+        grid:Creating a storytelling aid
+            nw:Body of knowledge → mind map
+                Tree structure composed of entries
+                Any entry can have children
+                Entries have an associated type for styling
+            ne:Wayfinding → tree navigation
+                Skip over subtrees
+                Reorder children (not yet)
+            sw:Feedback → navigate, edit and save
+                Draw down more information from the Net if online
+                No need for "just in case" slides
+                Edit slides during the performance
+                Save from the browser
+                Submit changes to an online repository
+            se:Engagement → HTML5
+                CSS3 provides rich styles and transitions
+                Display images, video
+                Client can build diagrams with CSS and SVG
+                Different views → layouts and types
+                    Pure text layouts
+                        banana split
+                        apple pie
+                        cheshire cheese
+                        carrot soup
+                    Typed entries
+                        y-axis:sweet
+                        down-arrow:savoury
+                        banana split
+                        apple pie
+                        cheshire cheese
+                        carrot soup
+                    transition: Typed entries
+                        right image:http://placekitten.com/200/200
+                        Don't look at the kitten!
+                        Pay attention to the presentation!
+                    transition grid: Typed entries
+                        flash:+40%!
+                        y-axis:sweetness
+                        x-axis:temperature
+                        ne: apple pie
+                        nw: banana split
+                        se: carrot soup
+                        sw: cheshire cheese
     How to use Presentables
         A Presentable is a single self-contained HTML page
-            All CSS and JS baked in
+            All CSS and JS baked in (except web fonts)
             Open from server or local file
             Right click on "Save" to save a copy for sharing
             Download extra slides with ↓
@@ -93,7 +98,7 @@ This is a Presentable
         The Presentable Server
             Builds Presentables on demand
             Import BoK from a single text file
-                codeblock: Presentable\n    Building on tradition\n        A slide deck is a prepared sequence of visuals\n            Tools like PowerPoint reimplement older technologies (transparencies, OHP)\n            Even Web-based slide frameworks (rvl.io, prezi.com) have the same heritage\n        bubbles:Need to second-guess your audience\n            What do they already know?\n            How much detail do they need?\n            What views or visual aids will help them?\n            What might they ask at the end?
+                codeblock: This is a Presentable\n    [introduction] What's wrong with presentations\n        A presentation is a fixed sequence of visuals\n            Tools like PowerPoint reimplement older technologies\n                subtitle: transparencies, overhead projection...\n                With physical slides, manipulating the deck is cumbersome\n            Web-based slide frameworks have the same heritage\n                subtitle: rvl.io, prezi.com...\n                Still expect you to prepare your presentation beforehand\n                Requirement to be online is not always realistic
                 One line per entry (slide or list item)
                 Simple to edit
             Python mini-server
@@ -107,14 +112,18 @@ This is a Presentable
                 Pressing ↑ at root switches to a new Presentable based on the parent tree
             Or rip the HTML directly
                 codeblock: ./presentation.py bok.txt > /media/sdcard/my_slides.html
-    Future plans    
-        Bake in images and videos
-        More layouts to choose from
+        Not just for presentations
+            Storybooks
+            Flashcards
+                Press "r" to see a random slide
+                Use incremental slides to hide the solution
+            Your ideas?
+    ol: Future plans
         Client-side editing
+        Bake in more dependencies (images, fonts...)
         Super-rich types
-        BoK as mind map software
-        BoK as research tool
-    transition:
-        before image: http://placekitten.com/650/350
+        More layouts to choose from
+        BoK as mind map / research tool
+    p transition:The end!
+        iframe: https://maps.google.com/?ie=UTF8&t=h&layer=c&cbll=57.535337,-5.700881&panoid=8wjaI6uG2gqANfo7FuBBPw&cbp=13,93.87,,0,3.16&ll=57.502268,-5.701218&spn=0.115839,0.385895&z=11&source=embed&output=svembed
         after: djl@colourcountry.net
-        

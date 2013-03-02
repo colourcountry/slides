@@ -15,6 +15,7 @@ STYLES = {
     'boxes':            { 'inherit': 'text', 'js': 'default/boxes.type.js',              'css': 'default/boxes.type.css'     },
     'bubbles':          { 'inherit': 'text', 'js': 'default/bubbles.type.js',            'css': 'default/bubbles.type.css'   },
     'image':            { 'inherit': 'text', 'js': 'default/image.type.js'           },
+    'iframe':           { 'inherit': 'image','js': 'default/iframe.type.js'          },
     'subtitle':         { 'inherit': 'text', 'js': 'default/subtitle.type.js'        },
     'codeblock':        { 'inherit': 'text', 'js': 'default/codeblock.type.js'       },
     'color':            { 'inherit': 'text', 'js': 'default/color.type.js'           },

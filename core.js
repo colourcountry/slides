@@ -18,7 +18,7 @@ Pr.init = function(dz) {
             console.warn('children of '+deck.id+' not available');
             dz.init(this);
         } else if (deck.c.length == 0 ) {
-            console.warn(JSON.stringify(deck)+' has no children so will not yield a slide');
+            console.warn(deck.n+' ('+deck.id+') has no children so will not yield a slide');
             /* go to parent instead */
             window.location.href = deck.p;
         } else {
@@ -53,14 +53,20 @@ Pr.update_save_url = function() {
         baked_cache[i] =  baked_item;
     };
 
-    var data_url = '<!DOCTYPE html><html><head><title id="title">?</title><style id="styles">'+$('#styles').innerHTML;
-    data_url += '</style><script id="scripts">'+$('#scripts').innerHTML;
-    data_url += '</'+'script><script id="cache">Pr.cache = '+JSON.stringify(baked_cache)+';</'+'script></head>';
-    data_url += '<body id="body"><div id="slide-count"></div><div id="save-button"><a href="#1.0">Save</a></div><div id="slide-container"></div><div id="progress-bar"></div></body>';
-    data_url += '</html>';
-    data_url = 'data:text/html;charset=utf-8,'+encodeURIComponent(data_url);
+    var std_head = '<!DOCTYPE html><html><head><title id="title">?</title><style id="styles">'+$('#styles').innerHTML+'</style><script id="scripts">'+$('#scripts').innerHTML+'</'+'script>';
+    var std_body = '<body id="body"><div id="slide-count"></div><div id="new-button"><a href="#1.0">New</a></div><div id="save-button"><a href="#1.0">Save</a></div><div id="slide-container"></div><div id="progress-bar"></div></body>';
+    var save_url = '' + std_head;
+    if (Pr.server_url) {
+        save_url += '<script id="server-url">Pr.server_url = '+JSON.stringify(Pr.server_url)+';</'+'script>';
+    }
+    save_url += '<script id="cache">Pr.cache = '+JSON.stringify(baked_cache)+';</'+'script></head>'+std_body+'</html>';
+    save_url = 'data:text/html;charset=utf-8,'+encodeURIComponent(save_url);
 
-    $('#save-button a').href = data_url;
+    var new_url = std_head+'<script id="cache">Pr.cache = {"1":{"id":1,"n":"New Presentable","c":[2]},"2":{"id":2,"n":"Press e to edit","c":[]}};</'+'script></head>'+std_body+'</html>';
+    new_url = 'data:text/html;charset=utf-8,'+encodeURIComponent(new_url);
+
+    $('#save-button a').href = save_url;
+    $('#new-button a').href = new_url;
 };
 
 Pr.update_type = function(defn) {
@@ -195,17 +201,21 @@ Pr.find_deck = function(id, cb) {
     console.log("find_deck "+id);
 
     if (typeof this.cache[id] == 'undefined' || typeof this.cache[id].c == 'undefined') {
-        var client = new XMLHttpRequest();
-        client.onload = function() {
-            var response = JSON.parse( client.responseText );
-            this.add_to_caches( id, response );
-            cb( this.cache[id] );
-        }.bind(this);
-        client.onerror = function() {
-            alert("Failed to load more content: "+client.status+" "+client.statusText);
-        };
-        client.open("GET", Pr.server_url+"/extract/"+id+"?unroll=1", true);
-        client.send();
+        if (Pr.server_url) {
+            var client = new XMLHttpRequest();
+            client.onload = function() {
+                var response = JSON.parse( client.responseText );
+                this.add_to_caches( id, response );
+                cb( this.cache[id] );
+            }.bind(this);
+            client.onerror = function() {
+                alert("Failed to load more content: "+client.status+" "+client.statusText);
+            };
+            client.open("GET", Pr.server_url+"/extract/"+id+"?unroll=1", true);
+            client.send();
+        } else {
+            alert("This Presentable doesn't have a server to load more content from.");
+        }
     } else {
         cb( this.cache[id] );
     }
@@ -233,19 +243,23 @@ Pr.unroll_deck = function(id, cb) {
     }
 
     if (unrollNeeded) {
-        var client = new XMLHttpRequest();
-        client.onload = function() {
-            var response = JSON.parse( client.responseText );
-            this.add_to_caches( id, response );
-            this.update_save_url();
-            cb( this.cache[id] );
-        }.bind(this);
-        client.onerror = function() {
-            cb( { n:'Content not available', c: [], id: 0 } );
-            alert("Failed to load more content: "+client.status+" "+client.statusText);
-        };
-        client.open("GET", Pr.server_url+"/extract/"+id+"?unroll=2", true);
-        client.send();
+        if (Pr.server_url) {
+            var client = new XMLHttpRequest();
+            client.onload = function() {
+                var response = JSON.parse( client.responseText );
+                this.add_to_caches( id, response );
+                this.update_save_url();
+                cb( this.cache[id] );
+            }.bind(this);
+            client.onerror = function() {
+                cb( { n:'Content not available', c: [], id: 0 } );
+                alert("Failed to load more content: "+client.status+" "+client.statusText);
+            };
+            client.open("GET", Pr.server_url+"/extract/"+id+"?unroll=2", true);
+            client.send();
+        } else {
+            alert("This Presentable doesn't have a server to load more content from.");
+        }
     } else {
         cb( this.cache[id] );
     }

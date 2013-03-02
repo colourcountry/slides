@@ -3,8 +3,8 @@ x.prototype.get_object = function(children) {
 };
 
 x.prototype.get_item_attrs = function( idx, total ) {
-                    var width = 700/total;
-                    var x = width*idx+50;
-                    return 'style="height: 300px; width: '+width+'px; left: '+x+'px; bottom: 50px"';
+                    var width = 1400/total;
+                    var x = width*idx+100;
+                    return 'style="height: 600px; width: '+width+'px; left: '+x+'px; bottom: 100px"';
 };
 

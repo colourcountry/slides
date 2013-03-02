@@ -1,9 +1,9 @@
 section.x ol {
         list-style-position: inside;
-        margin-left: 50px;
+        margin-left: 100px;
 }
 
 section.x li {
-        margin: 10px 0;
-        text-indent: -50px;
+        margin: 20px 0;
+        text-indent: -100px;
 }

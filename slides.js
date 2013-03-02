@@ -141,8 +141,8 @@
     var db = document.body;
     var sx = db.clientWidth / window.innerWidth;
     var sy = db.clientHeight / window.innerHeight;
-    sx = 800 / window.innerWidth;
-    sy = 600 / window.innerHeight;
+    sx = 1600 / window.innerWidth;
+    sy = 1200 / window.innerHeight;
     var scale = 1/Math.max(sx, sy);
     var transform = "scale3d(" + scale +","+scale+","+scale+")";
 
