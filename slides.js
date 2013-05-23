@@ -49,63 +49,72 @@
       return;
     }
 
-    if ($('#edit').style.visibility == 'hidden') {
+    if ($('#edit').style.visibility != "visible") {
 
-    if ( aEvent.keyCode == 37 // left arrow
-      || aEvent.keyCode == 33 // page up
-    ) {
-      aEvent.preventDefault();
-      this.back();
-    }
-    if ( aEvent.keyCode == 39 // right arrow
-      || aEvent.keyCode == 34 // page down
-    ) {
-      aEvent.preventDefault();
-      this.forward();
-    }
-    if (aEvent.keyCode == 38) { // up arrow
-      aEvent.preventDefault();
-      this.out();
-    }
-    if (aEvent.keyCode == 40) { // down arrow
-      aEvent.preventDefault();
-      this.in();
-    }
-    if (aEvent.keyCode == 35) { // end
-      aEvent.preventDefault();
-      this.goEnd();
-    }
-    if (aEvent.keyCode == 36) { // home
-      aEvent.preventDefault();
-      this.goStart();
-    }
-    if (aEvent.keyCode == 32) { // space
-      aEvent.preventDefault();
-      this.toggleContent();
-    }
-    if (aEvent.keyCode == 69) { // e
-      aEvent.preventDefault();
-      this.edit();
-    }
-    if (aEvent.keyCode == 70) { // f
-      aEvent.preventDefault();
-      this.goFullscreen();
-    }
-    if (aEvent.keyCode == 79) { // o
-      aEvent.preventDefault();
-      this.toggleView();
-    }
-    if (aEvent.keyCode == 82) { // r
-      aEvent.preventDefault();
-      this.goRandom();
-    }
+        if ( aEvent.keyCode == 37 // left arrow
+          || aEvent.keyCode == 33 // page up
+        ) {
+          aEvent.preventDefault();
+          this.back();
+        } else
+        if ( aEvent.keyCode == 39 // right arrow
+          || aEvent.keyCode == 34 // page down
+        ) {
+          aEvent.preventDefault();
+          this.forward();
+        } else
+        if (aEvent.keyCode == 38) { // up arrow
+          aEvent.preventDefault();
+          this.out();
+        } else
+        if (aEvent.keyCode == 40) { // down arrow
+          aEvent.preventDefault();
+          this.in();
+        } else
+        if (aEvent.keyCode == 35) { // end
+          aEvent.preventDefault();
+          this.goEnd();
+        } else
+        if (aEvent.keyCode == 36) { // home
+          aEvent.preventDefault();
+          this.goStart();
+        } else
+        if (aEvent.keyCode == 32) { // space
+          aEvent.preventDefault();
+          this.toggleContent();
+        } else
+        if (aEvent.keyCode == 69) { // e
+          aEvent.preventDefault();
+          this.edit();
+        } else
+        if (aEvent.keyCode == 70) { // f
+          aEvent.preventDefault();
+          this.goFullscreen();
+        } else
+        if (aEvent.keyCode == 79) { // o
+          aEvent.preventDefault();
+          this.toggleView();
+        } else
+        if (aEvent.keyCode == 82) { // r
+          aEvent.preventDefault();
+          this.goRandom();
+        } else
+        if (aEvent.keyCode == 27) { // escape
+          aEvent.preventDefault();
+          this.edit();
+        }
+
+    } else {
+
+        if (aEvent.keyCode == 27) { // escape
+          aEvent.preventDefault();
+          this.edit();
+        } else {
+          this.pr.handle_edit_key(aEvent);
+        }
 
     }
 
-    if (aEvent.keyCode == 27) { // escape
-      aEvent.preventDefault();
-      this.edit();
-    }
 
   }
 
@@ -123,30 +132,39 @@
       aEvent.preventDefault();
       tracking = true;
       orgX = aEvent.changedTouches[0].pageX;
+      orgY = aEvent.changedTouches[0].pageY;
     }
 
     function move(aEvent) {
       if (!tracking) return;
-      newX = aEvent.changedTouches[0].pageX;
+      var newX = aEvent.changedTouches[0].pageX;
+      var newY = aEvent.changedTouches[0].pageY;
       if (orgX - newX > 100) {
         tracking = false;
         this.forward();
-      } else {
-        if (orgX - newX < -100) {
+      } else
+      if (orgX - newX < -100) {
+        tracking = false;
+        this.back();
+      } else
+      if (orgY - newY > 100) {
+        tracking = false;
+        this.out();
+      } else
+      if (orgY - newY < -100) {
           tracking = false;
-          this.back();
-        }
+          this.in();
       }
     }
   }
 
   Dz.setupView = function() {
     document.body.addEventListener("click", function ( e ) {
-      if (!Dz.html.classList.contains("_view")) return;
+      if (!this.html.classList.contains("_view")) return;
       if (!e.target || e.target.nodeName != "SECTION") return;
 
-      Dz.html.classList.remove("_view");
-      Dz.setCursor(e.getAttribute("id"));
+      this.html.classList.remove("_view");
+      this.setCursor(e.getAttribute("id"));
     }, false);
   }
 
@@ -258,15 +276,12 @@
         newidx = 1;
     }
 
-    $('#slide-count').innerHTML = newidx+'\u00a0/\u00a0'+this.slides.length;
+    $('#slide-count').innerHTML = newidx+'\u00a0of\u00a0'+this.slides.length;
 
     this.setProgress(newidx, newstep);
-    if (newidx != this.idx) {
-      this.setSlide(newidx);
-    }
-    if (newstep != this.step) {
-      this.setIncremental(newstep);
-    }
+    this.setSlide(newidx);
+    this.setIncremental(newstep);
+
     for (var i = 0; i < this.remoteWindows.length; i++) {
       this.postMsg(this.remoteWindows[i], "CURSOR", this.idx + "." + this.step);
     }
@@ -494,6 +509,13 @@ Dz.out = function() {
 };    
 
 Dz.edit = function() {
-    var deck_id = this.slides[this.idx-1].getAttribute('id');
-    this.pr.edit(deck_id);
+    var deck_id = this.slides[this.idx-1].getAttribute('id').substring(1);
+    this.pr.edit(deck_id, function(new_id) {
+        this.reinit();
+        if (new_id && $("#s"+new_id) && window.location.hash != "#" + new_id) {
+            window.location.hash = "#" + new_id;
+        } else {
+            this.onhashchange();
+        }
+    }.bind(this));
 }

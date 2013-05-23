@@ -1,9 +1,9 @@
 figure.x {
     background-color: black;
-    width: 100%;
-    height: 100%;
+    width: 1400px; /* firefox and chrome disagree on what 100% means */
+    height: 1201px; /* see below */
     position: fixed;
-    top: 0;
+    top: -1px; /* firefox again */
     left: 0;
     z-index: -1;
 }

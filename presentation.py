@@ -51,6 +51,7 @@ def build(rootId, cacheJson):
     output = '''<!DOCTYPE html>
 <html>
     <head>
+        <meta charset="utf-8">
         <title id="title">Slides</title>
         <style id="styles">
 %s
@@ -68,7 +69,7 @@ Pr.cache = %s;
     <body id="body">
         <div id="slide-count"></div>
         <div id="new-button"><a href="#1.0">New</a></div>
-        <div id="save-button"><a href="#1.0">Save</a></div>
+        <div id="save-button"><a href="#1.0" download="presentable.html">Save</a></div>
         <div id="slide-container"></div>
         <div id="progress-bar"></div>
         <div id="edit"></div>

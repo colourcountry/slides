@@ -17,13 +17,13 @@ if MINIMIZE:
     try:
         import rjsmin as mjsmin
         jsmin = mjsmin.jsmin
-    except ImportError:
-        pass
+    except ImportError as e:
+        sys.stderr.write("ImportError when importing jsmin: %s" % e)
     try:
         import cssmin as mcssmin
         cssmin = mcssmin.cssmin
-    except ImportError:
-        pass
+    except ImportError as e:
+        sys.stderr.write("ImportError when importing cssmin: %s" % e)
 
 MY_PATH = os.path.dirname(__file__)
 
@@ -104,4 +104,4 @@ if __name__=='__main__':
     except IndexError:
         src = open('demo.txt','r').read()
     slide.Slide.readText(src)
-    bottle.run()
+    bottle.run(host='0.0.0.0')

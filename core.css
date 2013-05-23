@@ -77,11 +77,13 @@ section {
         left: 0;
         display: block;
         opacity: 0;
+        overflow: hidden;
 
-        -webkit-transition: opacity 300ms;
-           -moz-transition: opacity 300ms;
-            -ms-transition: opacity 300ms;
-                transition: opacity 300ms;
+        -webkit-transition: opacity 0ms;
+           -moz-transition: opacity 0ms;
+            -ms-transition: opacity 0ms;
+                transition: opacity 0ms;
+
 }
 
 /* Later slides */
@@ -122,7 +124,7 @@ section[aria-selected] {
   #new-button {
     position: absolute;
     bottom: 70px;
-    left: 1620px;
+    left: 1420px;
     background-color: #222;
     border: 2px outset #222;
     padding: 2px;
@@ -132,7 +134,7 @@ section[aria-selected] {
   #save-button {
     position: absolute;
     bottom: 40px;
-    left: 1620px;
+    left: 1420px;
     background-color: #222;
     border: 2px outset #222;
     padding: 2px;
@@ -152,7 +154,7 @@ section[aria-selected] {
   #slide-count {
     position: absolute;
     bottom: 10px;
-    left: 1620px;
+    left: 1420px;
     background-color: #222;
     border: 2px outset #222;
     padding: 2px;
@@ -162,8 +164,8 @@ section[aria-selected] {
   * { margin: 0; padding: 0; -moz-box-sizing: border-box; -webkit-box-sizing: border-box; box-sizing: border-box; }
   [role="note"] { display: none; }
   body {
-    width: 1600px; height: 1200px;
-    margin-left: -800px; margin-top: -600px;
+    width: 1400px; height: 1200px;
+    margin-left: -700px; margin-top: -600px;
     position: absolute; top: 50%; left: 50%;
     /*overflow: hidden;*/
     display: none;
@@ -195,7 +197,7 @@ section[aria-selected] {
     top: 0;
     left: 0;
     z-index: 10;
-    color: red;
+    color: #0c0;
     font-size: 20px;
     font-family: monospace;
     visibility: hidden;
@@ -207,12 +209,33 @@ section[aria-selected] {
     color: white;
     font-family: monospace;
     font-size: 32px;
-    background-color: black;
+    background-color: #600;
     padding: 2px 2px 2px 1em;
     color: white;
     border: none;
     width: 100%;
 }
+
+#edit input._no_slide {
+    background-color: transparent;
+}
+
+#edit input:focus {
+    background-color: #c0f;
+}
+
+#edit input._no_slide:focus {
+    background-color: #00f;
+}
+
+#edit input._highlight {
+    background-color: #c00;
+}
+
+#edit input._highlight:focus {
+    background-color: #c0f;
+}
+
 
 #edit div div {
     padding-left: 60px;

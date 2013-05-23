@@ -38,10 +38,23 @@ Pr.init = function(dz) {
 
         $('#title').innerHTML = this.cache[this.root_id].n;
 
+        if (typeof Blob == 'undefined') {
+            alert("No blob support. Removing save button");
+            var save_button = $('#save-button');
+            save_button.parentNode.removeChild(save_button);
+            var new_button = $('#new-button');
+            new_button.parentNode.removeChild(new_button);
+        };
+
     }.bind(this));
 };
 
 Pr.update_save_url = function() {
+    if (!$('#save-button')) {
+        // No save button (probably because no Blob support)
+        return;
+    }
+
     var baked_cache = {};
     for ( var i in this.cache ) {
         baked_item = { id: this.cache[i].id };
@@ -53,19 +66,33 @@ Pr.update_save_url = function() {
         baked_cache[i] =  baked_item;
     };
 
-    var std_head = '<!DOCTYPE html><html><head><title id="title">?</title><style id="styles">'+$('#styles').innerHTML+'</style><script id="scripts">'+$('#scripts').innerHTML+'</'+'script>';
+    var std_head = '<!DOCTYPE html><html><head><title id="title">?</title><meta charset="utf-8"><style id="styles">'+$('#styles').innerHTML+'</style><script id="scripts">'+$('#scripts').innerHTML+'</'+'script>';
     var std_body = '<body id="body"><div id="slide-count"></div><div id="new-button"><a href="#1.0">New</a></div><div id="save-button"><a href="#1.0">Save</a></div><div id="slide-container"></div><div id="progress-bar"></div><div id="edit"></div></body>';
     var save_url = '' + std_head;
     if (Pr.server_url) {
         save_url += '<script id="server-url">Pr.server_url = '+JSON.stringify(Pr.server_url)+';</'+'script>';
     }
+
     save_url += '<script id="cache">Pr.cache = '+JSON.stringify(baked_cache)+';</'+'script></head>'+std_body+'</html>';
-    save_url = 'data:text/html;charset=utf-8,'+encodeURIComponent(save_url);
+    save_url = window.URL.createObjectURL(new Blob([save_url],{'type':'application/octet-stream'}));
 
-    var new_url = std_head+'<script id="cache">Pr.cache = {"1":{"id":1,"n":"New Presentable","c":[2]},"2":{"id":2,"n":"Press e to edit","c":[]}};</'+'script></head>'+std_body+'</html>';
-    new_url = 'data:text/html;charset=utf-8,'+encodeURIComponent(new_url);
 
+    var new_url = std_head+'<script id="cache">Pr.cache = {"1":{"id":1,"n":"New Presentable","c":[2]},"2":{"id":2,"n":"Press Escape to edit","c":[]}};</'+'script></head>'+std_body+'</html>';
+    new_url = window.URL.createObjectURL(new Blob([new_url],{'type':'text/html'}));
+
+    var old_save_url = $('#save-button a').href;
+    if (old_save_url.substring(0,5)=='blob:') {
+        console.debug("revoking old save URL "+old_save_url);
+        window.URL.revokeObjectURL(old_save_url);
+    }
     $('#save-button a').href = save_url;
+    $('#save-button a').download = this.cache[this.root_id].n+'.html';
+
+    var old_new_url = $('#new-button a').href;
+    if (old_new_url.substring(0,5)=='blob:') {
+        console.debug("revoking old new URL "+old_new_url);
+        window.URL.revokeObjectURL(old_new_url);
+    }
     $('#new-button a').href = new_url;
 };
 
@@ -127,7 +154,7 @@ Pr.update_type = function(defn) {
     return defn.t;
 }
 
-Pr.get_section = function(id, view) {
+Pr.get_section = function(id) {
     console.log("get_section "+id);
     /* we can be sure it's in the cache already */
     var defn = this.cache[id];
@@ -161,14 +188,15 @@ Pr.get_slides = function(id, unroll) {
 
     if (typeof defn.c == 'undefined') {
         /* FIXME make this automatic if online */
-        content = this.get_section(id);
+        content = '<div id="ss'+id+'">'+this.get_section(id) + '</div>';
     } else if (defn.c.length == 0) {
         /* zero length means there is definitely no content */
-        content = this.get_section(id);
+        content = '<div id="ss'+id+'">'+this.get_section(id) + '</div>';
     } else if (unroll == 0) {
-        content = this.get_section(id) + '<div id="cs'+id+'" aria-unroll="true"></div>';
+        /* this means there might be content so we need a place to put it if necessary */
+        content = '<div id="ss'+id+'">'+this.get_section(id) + '</div><div id="cs'+id+'" aria-unroll="true"></div>';
     } else {
-        content = this.get_section(id) + '<div id="cs'+id+'">' + get_child_slides(defn.c, unroll-1) + '</div>';
+        content = '<div id="ss'+id+'">'+this.get_section(id) + '</div><div id="cs'+id+'">' + get_child_slides(defn.c, unroll-1) + '</div>';
     }
     return content;
 };
@@ -266,9 +294,14 @@ Pr.unroll_deck = function(id, cb) {
 };
 
 Pr.populate_editor = function(node, root_id, highlight_id) {
+    var initialFocus = null;
     var div = document.createElement("div");
+    div.id = "ed"+root_id;
     var type = document.createElement("span");
     var input = document.createElement("input");
+    input.id = "edi"+root_id;
+    var hidden = document.createElement("input");
+    hidden.id = "edh"+root_id;
     if (typeof this.cache[root_id] == 'undefined') {
         var typeText = document.createTextNode('not available');
         type.appendChild(typeText);
@@ -282,29 +315,107 @@ Pr.populate_editor = function(node, root_id, highlight_id) {
         type.appendChild(typeText);
         div.appendChild(type);
         input.value = this.cache[root_id].n;
+        hidden.value = this.cache[root_id].n;
+        hidden.type = "hidden";
         if (root_id == highlight_id) {
-            input.addAttribute("class","_highlight");
+            initialFocus = input;
         }
+        slide_section = $('#s'+root_id);
+        if (!slide_section) {
+            // slide has not been unrolled or does not yield a slide
+            // can still edit it but will not jump there on exit
+            input.classList.add("_no_slide");
+        }
+        div.appendChild(hidden);
         div.appendChild(input);
         if (typeof this.cache[root_id].c != 'undefined') {
             for (var i=0; i<this.cache[root_id].c.length; i++) {
-                this.populate_editor(div, this.cache[root_id].c[i], highlight_id);
+                var newFocus = this.populate_editor(div, this.cache[root_id].c[i], highlight_id);
+                if (newFocus) {
+                    initialFocus = newFocus;
+                }
             }
         }
         node.appendChild(div);
     }
+    return initialFocus;
 };
 
-Pr.edit = function(id) {
+Pr.update_cache_from_editor = function(root_id) {
+    if (typeof this.cache[root_id] != 'undefined') {
+        old_value = $('#edh'+root_id).value;
+        new_value = $('#edi'+root_id).value;
+        if (old_value != new_value) {
+            console.debug('updating '+root_id+' from '+old_value+' to '+new_value);
+            this.cache[root_id].n = new_value;
+        }
+        if (typeof this.cache[root_id].c != 'undefined') {
+            for (var i=0; i<this.cache[root_id].c.length; i++) {
+                this.update_cache_from_editor(this.cache[root_id].c[i]);
+            }
+        }
+    }    
+};
+
+Pr.reboot_slides = function(root_id) {
+    if (typeof this.cache[root_id] != 'undefined') {
+        slide_div = $('#ss'+root_id);
+        if (slide_div) {
+            slide_div.innerHTML = this.get_section(root_id);
+        }
+        if (typeof this.cache[root_id].c != 'undefined') {
+            for (var i=0; i<this.cache[root_id].c.length; i++) {
+                this.reboot_slides(this.cache[root_id].c[i]);
+            }
+        }
+    }    
+};
+
+Pr.edit = function(id, reinitCb) {
     var edit_box = $('#edit');
-    if (edit_box.style.visibility == 'hidden') {
-        this.populate_editor(edit_box, this.root_id, id);
+    if (edit_box.style.visibility != 'visible') {
+        console.debug('showing editor');
+        var focus = this.populate_editor(edit_box, this.root_id, id);
         edit_box.style.visibility = 'visible';
+        if (focus) {
+            focus.classList.add("_highlight");
+            focus.focus();
+            focus.selectionStart = 0;
+            focus.selectionEnd = focus.value.length;
+            focus.scrollIntoView();
+        }
     } else {
+        console.debug('hiding editor');
         edit_box.style.visibility = 'hidden';
+        this.update_cache_from_editor(this.root_id);
+        this.reboot_slides(this.root_id);
+        var new_slide = document.activeElement.id;
+        if (new_slide.substring(0,3)=='edi'){
+            console.debug('returning to slide '+new_slide.substring(3));
+            reinitCb(new_slide.substring(3));
+        } else {
+            reinitCb();
+        }
         edit_box.innerHTML = '';
     }
 };
+
+Pr.handle_edit_key = function(aEvent) {
+    if (aEvent.keyCode == 38) { // up arrow
+        aEvent.preventDefault();
+        // TODO work like shift-tab?
+    } else
+    if (aEvent.keyCode == 40) { // down arrow
+        aEvent.preventDefault();
+        // TODO work like tab?
+        this.in();
+    } else
+    if (aEvent.keyCode == 13) { // enter
+        aEvent.preventDefault();
+        // TODO add new slide
+    }
+}
+
 
 init = function() {
     Pr.init(Dz);

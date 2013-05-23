@@ -125,5 +125,5 @@ This is a Presentable
         More layouts to choose from
         BoK as mind map / research tool
     p transition:The end!
-        iframe: https://maps.google.com/?ie=UTF8&t=h&layer=c&cbll=57.535337,-5.700881&panoid=8wjaI6uG2gqANfo7FuBBPw&cbp=13,93.87,,0,3.16&ll=57.502268,-5.701218&spn=0.115839,0.385895&z=11&source=embed&output=svembed
         after: djl@colourcountry.net
+iframe: https://maps.google.com/?ie=UTF8&t=h&layer=c&cbll=57.535337,-5.700881&panoid=8wjaI6uG2gqANfo7FuBBPw&cbp=13,93.87,,0,3.16&ll=57.502268,-5.701218&spn=0.115839,0.385895&z=11&source=embed&output=svembed
