@@ -97,12 +97,16 @@ Edit text on client and save locally
 Edit window scrolls to current slide automatically
 Show in edit window which slides are unrolled
 If leave edit window on an unrolled slide, jump to that slide
+Add item in edit window by pressing enter
+Reflect add/remove in slides
 ---
-Ipad swipe works for left and right only, should also support up and down
+Bug: unroll doesn't work perfectly when adding children -- have to go up and down to fix
+Remove item in edit window by removing all content and defocusing
+Added item can have non-default type
+Visual notification (not alert) when can't download new stuff
+Ipad swipe doesn't work, can't debug on iOS 5
 Bug: left and right arrows should work in text areas without screwing the whole page
 Bug: last slide missing "after" although script tries to add it
-Add slide on client by pressing enter
-Remove slide on client by removing all content
 Up and down arrows in edit window work like tab/shift-tab
 Edit type of slides on client (emergency edits only -- ie enter type name manually)
 Reinstate transition

@@ -208,12 +208,23 @@ section[aria-selected] {
 #edit input {
     color: white;
     font-family: monospace;
-    font-size: 32px;
+    font-size: 24px;
     background-color: #600;
     padding: 2px 2px 2px 1em;
     color: white;
     border: none;
     width: 100%;
+}
+
+#edit input._type {
+    color: #0f0;
+    background-color: transparent;
+    font-size: 12px;
+}
+
+#edit input._type:focus {
+    color: #0f0;
+    background-color: #040;
 }
 
 #edit input._no_slide {

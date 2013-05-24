@@ -31,7 +31,7 @@ Pr.init = function(dz) {
                     target.innerHTML = slide_html;
                     console.debug('Added to #cs'+deck.id+' ('+target+') child slides '+slide_html);
                 }
-                target.removeAttribute('aria-unroll');
+                target.removeAttribute('pr-unroll');
                 dz.reinit();
             }.bind(this));
         }
@@ -68,17 +68,17 @@ Pr.update_save_url = function() {
 
     var std_head = '<!DOCTYPE html><html><head><title id="title">?</title><meta charset="utf-8"><style id="styles">'+$('#styles').innerHTML+'</style><script id="scripts">'+$('#scripts').innerHTML+'</'+'script>';
     var std_body = '<body id="body"><div id="slide-count"></div><div id="new-button"><a href="#1.0">New</a></div><div id="save-button"><a href="#1.0">Save</a></div><div id="slide-container"></div><div id="progress-bar"></div><div id="edit"></div></body>';
-    var save_url = '' + std_head;
+    var save_blob = '' + std_head;
     if (Pr.server_url) {
-        save_url += '<script id="server-url">Pr.server_url = '+JSON.stringify(Pr.server_url)+';</'+'script>';
+        save_blob += '<script id="server-url">Pr.server_url = '+JSON.stringify(Pr.server_url)+';</'+'script>';
     }
 
-    save_url += '<script id="cache">Pr.cache = '+JSON.stringify(baked_cache)+';</'+'script></head>'+std_body+'</html>';
-    save_url = window.URL.createObjectURL(new Blob([save_url],{'type':'application/octet-stream'}));
+    save_blob += '<script id="cache">Pr.cache = '+JSON.stringify(baked_cache)+';</'+'script></head>'+std_body+'</html>';
+    var save_url = window.URL.createObjectURL(new Blob([save_blob],{'type':'application/octet-stream'}));
 
-
-    var new_url = std_head+'<script id="cache">Pr.cache = {"1":{"id":1,"n":"New Presentable","c":[2]},"2":{"id":2,"n":"Press Escape to edit","c":[]}};</'+'script></head>'+std_body+'</html>';
-    new_url = window.URL.createObjectURL(new Blob([new_url],{'type':'text/html'}));
+    // FIXME don't regenerate this all the time it's stupid
+    var new_blob = std_head+'<script id="cache">Pr.cache = {"1":{"id":1,"n":"New Presentable","c":[2]},"2":{"id":2,"p":1,"n":"Press Escape to edit","c":[]}};</'+'script></head>'+std_body+'</html>';
+    var new_url = window.URL.createObjectURL(new Blob([new_blob],{'type':'text/html'}));
 
     var old_save_url = $('#save-button a').href;
     if (old_save_url.substring(0,5)=='blob:') {
@@ -93,7 +93,10 @@ Pr.update_save_url = function() {
         console.debug("revoking old new URL "+old_new_url);
         window.URL.revokeObjectURL(old_new_url);
     }
+
+    // it's nice to make new just go straight in but it's not to be, because blob urls don't take hashes
     $('#new-button a').href = new_url;
+    $('#new-button a').download = 'new.html';
 };
 
 Pr.update_type = function(defn) {
@@ -190,11 +193,11 @@ Pr.get_slides = function(id, unroll) {
         /* FIXME make this automatic if online */
         content = '<div id="ss'+id+'">'+this.get_section(id) + '</div>';
     } else if (defn.c.length == 0) {
-        /* zero length means there is definitely no content */
-        content = '<div id="ss'+id+'">'+this.get_section(id) + '</div>';
+        /* zero length means there is no content, but need a placeholder if we later edit it */
+        content = '<div id="ss'+id+'">'+this.get_section(id) + '</div><div id="cs'+id+'"></div>';
     } else if (unroll == 0) {
-        /* this means there might be content so we need a place to put it if necessary */
-        content = '<div id="ss'+id+'">'+this.get_section(id) + '</div><div id="cs'+id+'" aria-unroll="true"></div>';
+        /* this means there might be content that awaits unrolling */
+        content = '<div id="ss'+id+'">'+this.get_section(id) + '</div><div id="cs'+id+'" pr-unroll="true"></div>';
     } else {
         content = '<div id="ss'+id+'">'+this.get_section(id) + '</div><div id="cs'+id+'">' + get_child_slides(defn.c, unroll-1) + '</div>';
     }
@@ -210,8 +213,6 @@ Pr.get_child_slides = function(id_list, unroll) {
 };
 
 Pr.add_to_caches = function(id, extract) {
-    console.log("add_to_caches "+id);
-
     if (typeof extract[id] != 'undefined') {
         this.cache[id] = extract[id];
         if (typeof extract[id].c != 'undefined') {
@@ -220,7 +221,7 @@ Pr.add_to_caches = function(id, extract) {
             }
         }
     } else {
-        console.log("add_to_caches: extract didn't include "+id);
+        console.debug("add_to_caches: extract didn't include "+id);
     };
 };
 
@@ -293,60 +294,57 @@ Pr.unroll_deck = function(id, cb) {
     }
 };
 
-Pr.populate_editor = function(node, root_id, highlight_id) {
-    var initialFocus = null;
+Pr.populate_editor = function(node, root_id, replace) {
     var div = document.createElement("div");
     div.id = "ed"+root_id;
-    var type = document.createElement("span");
-    var input = document.createElement("input");
-    input.id = "edi"+root_id;
-    var hidden = document.createElement("input");
-    hidden.id = "edh"+root_id;
     if (typeof this.cache[root_id] == 'undefined') {
-        var typeText = document.createTextNode('not available');
-        type.appendChild(typeText);
-        div.appendChild(type);
+        div.innerHTML = '<span>not available</span>';
     } else {
         if (typeof this.cache[root_id].s == 'undefined') {
-            var typeText = document.createTextNode(this.default_type);
+            var type_html = '<input class="_type" id="edt'+root_id+'" value="'+this.default_type+'">';
         } else {
-            var typeText = document.createTextNode(this.cache[root_id].s);
+            var type_html = '<input class="_type" id="edt'+root_id+'" value="'+this.cache[root_id].s+'">';
         }
-        type.appendChild(typeText);
-        div.appendChild(type);
-        input.value = this.cache[root_id].n;
-        hidden.value = this.cache[root_id].n;
-        hidden.type = "hidden";
-        if (root_id == highlight_id) {
-            initialFocus = input;
-        }
-        slide_section = $('#s'+root_id);
+
+        var content_attr = this.cache[root_id].n.replace(/(&)|(")|(\u00A0)/g, function(match, amp, quote) {
+            if (amp) return "&amp;";
+            if (quote) return "&quot;";
+            return "&nbsp;";
+        });
+
+        var input_attrs = '';
+        var slide_section = $('#s'+root_id);
         if (!slide_section) {
             // slide has not been unrolled or does not yield a slide
             // can still edit it but will not jump there on exit
-            input.classList.add("_no_slide");
+            input_attrs = 'class="_no_slide"';
         }
-        div.appendChild(hidden);
-        div.appendChild(input);
+
+        var input_html = '<input '+input_attrs+' id="edi'+root_id+'" value="'+content_attr+'">';
+
+        div.innerHTML = type_html + input_html;
+
         if (typeof this.cache[root_id].c != 'undefined') {
             for (var i=0; i<this.cache[root_id].c.length; i++) {
-                var newFocus = this.populate_editor(div, this.cache[root_id].c[i], highlight_id);
-                if (newFocus) {
-                    initialFocus = newFocus;
-                }
+                this.populate_editor(div, this.cache[root_id].c[i]);
             }
         }
-        node.appendChild(div);
+
+        if (replace) {
+            node.replaceChild(div,replace);
+        } else {
+            node.appendChild(div);
+        }
     }
-    return initialFocus;
 };
 
 Pr.update_cache_from_editor = function(root_id) {
     if (typeof this.cache[root_id] != 'undefined') {
-        old_value = $('#edh'+root_id).value;
-        new_value = $('#edi'+root_id).value;
-        if (old_value != new_value) {
-            console.debug('updating '+root_id+' from '+old_value+' to '+new_value);
+        var node = $('#edi'+root_id);
+        console.log('#edi'+root_id+' is '+node);
+        var new_value = $('#edi'+root_id).value;
+        console.log(new_value);
+        if (new_value) {
             this.cache[root_id].n = new_value;
         }
         if (typeof this.cache[root_id].c != 'undefined') {
@@ -375,8 +373,9 @@ Pr.edit = function(id, reinitCb) {
     var edit_box = $('#edit');
     if (edit_box.style.visibility != 'visible') {
         console.debug('showing editor');
-        var focus = this.populate_editor(edit_box, this.root_id, id);
+        this.populate_editor(edit_box, this.root_id);
         edit_box.style.visibility = 'visible';
+        focus = $('#edi'+id);
         if (focus) {
             focus.classList.add("_highlight");
             focus.focus();
@@ -408,11 +407,62 @@ Pr.handle_edit_key = function(aEvent) {
     if (aEvent.keyCode == 40) { // down arrow
         aEvent.preventDefault();
         // TODO work like tab?
-        this.in();
     } else
     if (aEvent.keyCode == 13) { // enter
         aEvent.preventDefault();
-        // TODO add new slide
+        var focus_id = document.activeElement.id.substring(3);
+
+        console.debug("adding to "+focus_id);
+        if (this.cache[focus_id] && typeof this.cache[focus_id].p != 'undefined') {
+
+            // server will promise not to create ids with "x" in
+            // when resyncing with BoK these will get a "real" id
+            var count = 1;
+            while ( this.cache[focus_id+"x"+count] ) {
+                count += 1;
+            }
+            var new_id = focus_id+"x"+count;
+
+            if (aEvent.shiftKey && typeof this.cache[focus_id].c != undefined && this.cache[focus_id].c.length == 0) {
+                console.debug("adding new child "+new_id);
+                var parent_id = focus_id;
+            } else {
+                console.debug("adding new sibling "+new_id);
+                var parent_id = this.cache[focus_id].p;
+            }
+
+            // going to replace parent so ensure all edits are saved
+            this.update_cache_from_editor(parent_id);
+
+            this.cache[new_id] = { n: '',
+                                   id: new_id,
+                                   s: this.default_type,
+                                   p: parent_id,
+                                   c: [] };
+
+            if ( parent_id == focus_id ) {
+                this.cache[parent_id].c = [new_id];
+                console.debug('unrollabilifying #cs'+this.cache[parent_id].p);
+                // need to let the slide code know that the (now grand-)parent is now unrollable
+                //$('#cs'+this.cache[parent_id].p).setAttribute('pr-unroll','true');
+            } else {
+                var sibling_ids = this.cache[parent_id].c;
+                var new_sibling_ids = [];
+                for ( var i=0; i<sibling_ids.length; i++) {
+                    new_sibling_ids.push(sibling_ids[i]);
+                    if (sibling_ids[i] == focus_id) {
+                        new_sibling_ids.push(new_id);
+                    }
+                }
+                this.cache[parent_id].c = new_sibling_ids;
+            }
+
+            console.debug("replacing "+parent_id);
+            replace_node = $('#ed'+parent_id);
+            this.populate_editor(replace_node.parentNode, parent_id, replace_node);
+
+            $('#edi'+new_id).focus();
+        }
     }
 }
 

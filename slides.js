@@ -20,7 +20,7 @@
     console.debug('init found '+this.slides.length+' slides: '+this.slides);
 
     this.progressBar = $("#progress-bar");
-    this.html = document.body.parentNode;
+    this.html = $("html");
     this.setupParams();
     this.goStart();
     this.onhashchange(); /* be synchronous on load */
@@ -44,8 +44,7 @@
     // Don't intercept keyboard shortcuts
     if (aEvent.altKey
       || aEvent.ctrlKey
-      || aEvent.metaKey
-      || aEvent.shiftKey) {
+      || aEvent.metaKey) {
       return;
     }
 
@@ -257,11 +256,11 @@
 
   Dz.onhashchange = function() {
     var cursor = window.location.hash.split("#"),
-        newid = 1,
+        newid = '1',
         newidx = 0,
         newstep = 0;
     if (cursor.length == 2) {
-      newid = ~~cursor[1].split(".")[0];
+      newid = cursor[1].split(".")[0];
       newstep = ~~cursor[1].split(".")[1];
     }
 
@@ -273,6 +272,7 @@
 
     if (newidx == 0) {
         /* slide not found, maybe do something different here */
+        console.log("No slide with id "+newid);
         newidx = 1;
     }
 
@@ -346,7 +346,7 @@
       }
       old = old.parentNode;
       while (old !== document) {
-        old.removeAttribute("aria-parent");
+        old.removeAttribute("pr-parent");
         old = old.parentNode;
       }
     }
@@ -361,7 +361,7 @@
       }
       next = next.parentNode;
       while (next !== document) {
-        next.setAttribute("aria-parent", "true");
+        next.setAttribute("pr-parent", "true");
         next = next.parentNode;
       }
     } else {
@@ -452,7 +452,10 @@ Dz.in = function(go_to) {
     var deck_id = this.slides[this.idx-1].getAttribute('id');
     var target = $('#c'+deck_id);
 
-    if (target && target.hasAttribute('aria-unroll')) {
+    console.debug('target '+target.id+' '+target.hasAttribute('pr-unroll')+' with '+deck_id.slice(1));
+
+    if (target && target.hasAttribute('pr-unroll')) {
+
 
         this.pr.find_deck( deck_id.slice(1), function(deck) {
             if (typeof deck.c == 'undefined') {
@@ -460,11 +463,10 @@ Dz.in = function(go_to) {
             } else if (deck.c.length == 0 ) {
                 console.warn(JSON.stringify(deck)+' has no children');
             } else {
-
                 this.pr.unroll_deck( deck.id, function( deck ) {
                     var slide_html = this.pr.get_child_slides( deck.c, 0 );
                     target.innerHTML = slide_html;
-                    target.removeAttribute('aria-unroll');
+                    target.removeAttribute('pr-unroll');
                     this.reinit();
                     if (typeof go_to == 'undefined') {
                         this.forward();
@@ -496,7 +498,7 @@ Dz.out = function() {
             var target = $('#cs'+parent.id);
             if (target) {
                 target.innerHTML = '';
-                target.setAttribute('aria-unroll','true');
+                target.setAttribute('pr-unroll','true');
                 this.reinit();
                 this.setCursor(parent.id,0);
             } else {
