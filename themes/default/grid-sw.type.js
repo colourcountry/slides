@@ -1,1 +1,4 @@
-x.prototype.grid_position = 'sw';
+{
+    grid_position : 'sw'
+}
+

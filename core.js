@@ -1,5 +1,6 @@
 var Pr = {
     cache: {},
+    helpCache: {"1":{"id":1,"n":"Help","c":[2]},"2":{"id":2,"p":1,"n":"TODO","c":[]}},
     types: {},
     root_id: null,
     default_type: 'text',
@@ -39,7 +40,7 @@ Pr.init = function(dz) {
         $('#title').innerHTML = this.cache[this.root_id].n;
 
         if (typeof Blob == 'undefined') {
-            alert("No blob support. Removing save button");
+            console.warn("No blob support. Removing save button");
             var save_button = $('#save-button');
             save_button.parentNode.removeChild(save_button);
             var new_button = $('#new-button');
@@ -158,7 +159,7 @@ Pr.update_type = function(defn) {
 }
 
 Pr.get_section = function(id) {
-    console.log("get_section "+id);
+    console.debug("get_section "+id);
     /* we can be sure it's in the cache already */
     var defn = this.cache[id];
 
@@ -189,17 +190,24 @@ Pr.get_slides = function(id, unroll) {
     var defn = this.cache[id];
     var content = '';
 
+    var section = this.get_section(id);
+    if (section) {
+        var c_lass='class="ss"';
+    } else {
+        var c_lass='';
+    }
+
     if (typeof defn.c == 'undefined') {
         /* FIXME make this automatic if online */
-        content = '<div id="ss'+id+'">'+this.get_section(id) + '</div>';
+        content = '<div id="ss'+id+'" '+c_lass+'>'+this.get_section(id) + '</div>';
     } else if (defn.c.length == 0) {
         /* zero length means there is no content, but need a placeholder if we later edit it */
-        content = '<div id="ss'+id+'">'+this.get_section(id) + '</div><div id="cs'+id+'"></div>';
+        content = '<div id="ss'+id+'" '+c_lass+'>'+this.get_section(id) + '</div><div id="cs'+id+'"></div>';
     } else if (unroll == 0) {
         /* this means there might be content that awaits unrolling */
-        content = '<div id="ss'+id+'">'+this.get_section(id) + '</div><div id="cs'+id+'" pr-unroll="true"></div>';
+        content = '<div id="ss'+id+'" '+c_lass+'>'+this.get_section(id) + '</div><div id="cs'+id+'" class="cs" pr-unroll="true"></div>';
     } else {
-        content = '<div id="ss'+id+'">'+this.get_section(id) + '</div><div id="cs'+id+'">' + get_child_slides(defn.c, unroll-1) + '</div>';
+        content = '<div id="ss'+id+'" '+c_lass+'>'+this.get_section(id) + '</div><div id="cs'+id+'" class="cs">' + get_child_slides(defn.c, unroll-1) + '</div>';
     }
     return content;
 };
@@ -227,7 +235,7 @@ Pr.add_to_caches = function(id, extract) {
 
 Pr.find_deck = function(id, cb) {
 
-    console.log("find_deck "+id);
+    console.debug("find_deck "+id);
 
     if (typeof this.cache[id] == 'undefined' || typeof this.cache[id].c == 'undefined') {
         if (Pr.server_url) {
@@ -252,7 +260,7 @@ Pr.find_deck = function(id, cb) {
 
 Pr.unroll_deck = function(id, cb) {
 
-    console.log("unroll_deck "+id);
+    console.debug("unroll_deck "+id);
 
     /* we can be sure it's in the cache already */
     var defn = this.cache[id];
@@ -341,9 +349,9 @@ Pr.populate_editor = function(node, root_id, replace) {
 Pr.update_cache_from_editor = function(root_id) {
     if (typeof this.cache[root_id] != 'undefined') {
         var node = $('#edi'+root_id);
-        console.log('#edi'+root_id+' is '+node);
+        console.debug('#edi'+root_id+' is '+node);
         var new_value = $('#edi'+root_id).value;
-        console.log(new_value);
+        console.debug(new_value);
         if (new_value) {
             this.cache[root_id].n = new_value;
         }
@@ -369,33 +377,32 @@ Pr.reboot_slides = function(root_id) {
     }    
 };
 
-Pr.edit = function(id, reinitCb) {
+Pr.hide_editor = function(id, reinitCb) {
     var edit_box = $('#edit');
-    if (edit_box.style.visibility != 'visible') {
-        console.debug('showing editor');
-        this.populate_editor(edit_box, this.root_id);
-        edit_box.style.visibility = 'visible';
-        focus = $('#edi'+id);
-        if (focus) {
-            focus.classList.add("_highlight");
-            focus.focus();
-            focus.selectionStart = 0;
-            focus.selectionEnd = focus.value.length;
-            focus.scrollIntoView();
-        }
+    console.debug('hiding editor');
+    this.update_cache_from_editor(this.root_id);
+    this.reboot_slides(this.root_id);
+    var new_slide = document.activeElement.id;
+    if (new_slide.substring(0,3)=='edi'){
+        console.debug('returning to slide '+new_slide.substring(3));
+        reinitCb(new_slide.substring(3));
     } else {
-        console.debug('hiding editor');
-        edit_box.style.visibility = 'hidden';
-        this.update_cache_from_editor(this.root_id);
-        this.reboot_slides(this.root_id);
-        var new_slide = document.activeElement.id;
-        if (new_slide.substring(0,3)=='edi'){
-            console.debug('returning to slide '+new_slide.substring(3));
-            reinitCb(new_slide.substring(3));
-        } else {
-            reinitCb();
-        }
-        edit_box.innerHTML = '';
+        reinitCb();
+    }
+    edit_box.innerHTML = '';
+}
+
+Pr.show_editor = function(id) {
+    var edit_box = $('#edit');
+    console.debug('showing editor');
+    this.populate_editor(edit_box, this.root_id);
+    focus = $('#edi'+id);
+    if (focus) {
+        focus.classList.add("_highlight");
+        focus.focus();
+        focus.selectionStart = 0;
+        focus.selectionEnd = focus.value.length;
+        focus.scrollIntoView();
     }
 };
 
@@ -465,7 +472,6 @@ Pr.handle_edit_key = function(aEvent) {
         }
     }
 }
-
 
 init = function() {
     Pr.init(Dz);

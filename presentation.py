@@ -31,6 +31,8 @@ SLIDES = jsmin(open('slides.js','r').read())
 CORE = jsmin(open('core.js','r').read())
 TYPES = jsmin(open('types.js','r').read())
 CORE_CSS = cssmin(open('core.css','r').read())
+EDITOR_CSS = cssmin(open('editor.css','r').read())
+OVERVIEW_CSS = cssmin(open('overview.css','r').read())
 
 ALL_CSS = ''
 ALL_JS = HELPERS + SLIDES + CORE + TYPES
@@ -40,7 +42,7 @@ for style in THEME.styles:
     ALL_CSS += THEME.getCss(style)
     ALL_JS += THEME.getJs(style)
 
-ALL_CSS += CORE_CSS
+ALL_CSS += CORE_CSS + EDITOR_CSS + OVERVIEW_CSS
 
 
 
@@ -49,7 +51,7 @@ def build(rootId, cacheJson):
     js = ALL_JS
 
     output = '''<!DOCTYPE html>
-<html>
+<html class="_view">
     <head>
         <meta charset="utf-8">
         <title id="title">Slides</title>
@@ -67,6 +69,7 @@ Pr.cache = %s;
         </script>
     </head>
     <body id="body">
+        <div id="help"><tt>Space</tt> / <tt>← →</tt> Navigate | <tt>+</tt> Insert detail | <tt>&minus;</tt> Remove detail | <tt>Space</tt> / <tt>O</tt> Begin presentation or re-enter overview | <tt>Esc</tt> Edit | <i>ALPHA software!</i> Feedback to <tt>@colourcountry</tt></div>
         <div id="slide-count"></div>
         <div id="new-button"><a href="#1.0">New</a></div>
         <div id="save-button"><a href="#1.0" download="presentable.html">Save</a></div>

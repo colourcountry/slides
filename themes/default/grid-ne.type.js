@@ -1,1 +1,4 @@
-x.prototype.grid_position = 'ne';
+{
+    grid_position : 'ne'
+}
+

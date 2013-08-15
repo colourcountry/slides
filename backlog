@@ -99,8 +99,19 @@ Show in edit window which slides are unrolled
 If leave edit window on an unrolled slide, jump to that slide
 Add item in edit window by pressing enter
 Reflect add/remove in slides
+Fix nasty x.prototype stuff
+Overview page
+Small amount of help
+Space leaves overview or advances
+Click in overview page to change focus
+More self-explanatory default presentation
 ---
+Move new/save buttons onto overview screen
+Make help text into active buttons for tablet usability
+Fix nasty .x CSS stuff
 Bug: unroll doesn't work perfectly when adding children -- have to go up and down to fix
+Bug: background colors/images are not aligned to slide
+More help
 Remove item in edit window by removing all content and defocusing
 Added item can have non-default type
 Visual notification (not alert) when can't download new stuff
@@ -116,7 +127,6 @@ Allow slides to have multiple parents: if a slide has already been unrolled some
 Allow hash-urls to be slide keys, not just ids
 Navigation uses key by preference
 Rich content - video:
-Documentation!
 Child reordering
 Different list styles - multi-generation - org chart
 Different list styles - multi-generation - mind map

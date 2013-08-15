@@ -1,5 +1,7 @@
-x.prototype.section_right = function(parent) {
-    return this.value();
-};
+{
+    section_right : function(parent) {
+        return this.value();
+    },
 
-x.prototype.suppress_child = true;
+    suppress_child : true
+}

@@ -1,0 +1,135 @@
+Presentables
+    [introduction] What is a Presentable?
+        The problem with presentations
+            A presentation is a fixed sequence of visuals prepared beforehand
+            incremental bubbles:Need to second-guess your audience
+                What do they already know?
+                How much detail do they need?
+                What views or visual aids will help them?
+                What might they ask at the end?
+            incremental boxes:Coping strategies are ingrained
+                Fleshing out slides with notes
+                Adding extra "backup" slides at the end
+                Ditching the visuals entirely
+            Current Web slide frameworks have the same heritage
+                subtitle: rvl.io, prezi.com...
+                Still expect you to prepare your presentation beforehand
+                The requirement to be online is not always realistic
+            Why do we live with this?
+                Tools like PowerPoint reimplement older technologies
+                Transparencies, overhead projection...
+                With physical slides, manipulating the deck is cumbersome
+        Let's rediscover an older tradition
+            style: color: #f62;
+            background image: http://upload.wikimedia.org/wikipedia/commons/thumb/1/12/A_Story-teller_reciting_from_the_%22Arabian_Nights.%22_%281911%29_-_TIMEA.jpg/800px-A_Story-teller_reciting_from_the_%22Arabian_Nights.%22_%281911%29_-_TIMEA.jpg
+    Presenting is storytelling
+        What does a storyteller do?
+            Draws on a body of knowledge
+            Picks out a meaningful path
+            Explores topics deeply, goes off on tangents, skips sections
+            Encourages the audience to ask questions
+            Evolves the story through the telling
+            Puts on a memorable event
+        transition p:A presentation tool is...
+            before image:http://upload.wikimedia.org/wikipedia/commons/thumb/1/11/Edda.jpg/443px-Edda.jpg
+            after: a storytelling aid
+        grid:What does a storyteller need?
+            nw:A body of knowledge to draw from
+            ne:A way to navigate this knowledge
+            sw:Flexibility to respond to the audience
+            se:Engaging visuals
+        grid:Creating a storytelling aid
+            nw:Body of knowledge → mind map
+                Tree structure composed of entries
+                Any entry can have children
+                Entries have an associated type for styling
+            ne:Wayfinding → tree navigation
+                Skip over subtrees
+                Reorder children (not yet)
+            sw:Feedback → navigate, edit and save
+                Draw down more information from the Net if online
+                No need for "just in case" slides
+                Edit slides during the performance
+                Save from the browser
+                Submit changes to an online repository
+            se:Engagement → HTML5
+                CSS3 provides rich styles and transitions
+                Display images, video
+                Client can build diagrams with CSS and SVG
+                Different views → layouts and types
+                    Pure text layouts
+                        banana split
+                        apple pie
+                        cheshire cheese
+                        carrot soup
+                    Typed entries
+                        y-axis:sweet
+                        down-arrow:savoury
+                        banana split
+                        apple pie
+                        cheshire cheese
+                        carrot soup
+                    transition: Typed entries
+                        right image:http://placekitten.com/200/200
+                        Don't look at the kitten!
+                        Pay attention to the presentation!
+                    transition grid: Typed entries
+                        flash:+40%!
+                        y-axis:sweetness
+                        x-axis:temperature
+                        ne: apple pie
+                        nw: banana split
+                        se: carrot soup
+                        sw: cheshire cheese
+    How to use a Presentable
+        A single self-contained HTML page
+            Open from Web, local file, e-mail...
+            Follow the story with ← →
+            Or go off-road with + - or direct click
+        Story is a route through a content cache
+            Content cache is a slice from the body of knowledge
+            Contains all slides you're likely to need
+            If online, download extra slides into cache as you go
+        Basic editing capabilities
+            Press Escape to see the content cache
+            Edit text and slide types, add new slides
+            Good for correcting mistakes on the road
+            More powerful editor planned server side
+        New button
+            Create new Presentables without needing a server
+            Share embedded code at will
+        Save button
+            Saves current state of story
+            Includes content cache
+        Not just for presentations?
+            Storybooks
+            Flashcards
+                Press "r" to see a random slide
+                Use incremental slides to hide the solution
+            Your ideas?
+    The Simple Presentable Server
+        Builds Presentables on demand
+            Imports BoK from a text file
+                codeblock: This is a Presentable\n    [introduction] What's wrong with presentations\n        A presentation is a fixed sequence of visuals\n            Tools like PowerPoint reimplement older technologies\n                subtitle: transparencies, overhead projection...\n                With physical slides, manipulating the deck is cumbersome\n            Web-based slide frameworks have the same heritage\n                subtitle: rvl.io, prezi.com...\n                Still expect you to prepare your presentation beforehand\n                Requirement to be online is not always realistic
+                One line per entry (slide or list item)
+                Simple to edit
+            Python mini-server
+                codeblock: ./server.py bok.txt
+                Uses bottle.py
+            Download one slide
+                codeblock: http://server/presentation/<id>
+                Recommended starting point when online
+            Download whole tree
+                codeblock: http://server/offline/<id>
+                Pressing ↑ at root switches to a new Presentable based on the parent tree
+            Or rip the HTML directly
+                codeblock: ./presentation.py bok.txt > /media/sdcard/my_slides.html
+    ol: Future plans
+        Super-rich types
+        More layouts to choose from
+        BoK as mind map / research tool
+        Bake in images, fonts...
+        Server side editor
+    p transition:The end!
+        after: djl@colourcountry.net
+        iframe: https://maps.google.com/?ie=UTF8&t=h&layer=c&cbll=57.535337,-5.700881&panoid=8wjaI6uG2gqANfo7FuBBPw&cbp=13,93.87,,0,3.16&ll=57.502268,-5.701218&spn=0.115839,0.385895&z=11&source=embed&output=svembed

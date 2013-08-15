@@ -1,5 +1,3 @@
-@import url("http://fonts.googleapis.com/css?family=Shadows+Into+Light+Two");
-
 /* debug
 * { border:1px solid blue; }
 
@@ -10,15 +8,63 @@ h1,h2,h3,h4 { border:1px solid cyan; }
 */
 
 html {
-    background-color: black; counter-reset: slideidx; 
+    background-color: black; 
 }
 
 body {
-    background-color: #230;
     border-radius: 24px;
     color: white;
     text-shadow: #000011 4px 4px 4px;
 }
+
+
+
+#slide-container ._section-head {
+    color: #4cf;
+}
+
+#slide-container>.cs>.cs section {
+    color: #ffa;
+}
+
+#slide-container>.cs>.cs>.cs section {
+    color: #fc8;
+}
+
+#slide-container>.cs>.cs>.cs>.cs section {
+    color: #fbb;
+}
+
+#slide-container>.cs>.cs>.cs>.cs>.cs section {
+    color: #faf;
+}
+
+#slide-container>.cs ._section-head {
+    color: white;
+}
+
+#slide-container>.cs>.cs ._section-head {
+    color: white;
+}
+
+#slide-container>.cs>.cs>.cs ._section-head {
+    color: #ffa;
+}
+
+#slide-container>.cs>.cs>.cs>.cs ._section-head {
+    color: #fc8;
+}
+
+#slide-container>.cs>.cs>.cs>.cs>.cs ._section-head {
+    color: #fbb;
+}
+
+#slide-container>.cs>.cs>.cs>.cs>.cs>.cs ._section-head {
+    color: #faf;
+}
+
+
+
 
 col._left {
     width: 10%;
@@ -34,13 +80,14 @@ col._right {
 
 /* All slides and earlier slides */
 section {
-        font-family: 'Shadows Into Light Two', sans-serif;
+        font-family: 'Helvetica Light', 'Helvetica', sans-serif;
+        font-weight: 200;
         font-size: 60px;
         left: 0;
         display: block;
         opacity: 0;
-        padding: 80px;
-        overflow: hidden;
+        background-color: #222;
+        /*overflow: hidden;*/
 
         -webkit-transition: opacity 300ms;
            -moz-transition: opacity 300ms;
@@ -74,11 +121,11 @@ section[aria-selected] {
 
 ._section-head {
     text-align: center;
-    padding-bottom: 60px;
+    margin-bottom: 60px;
+    margin-top: 60px;
 }
 
 section h1 {
-    /* The font from Google */
     font-size: 100px;
 }
 
@@ -98,18 +145,18 @@ section td {
 
 section a {
     text-decoration: none;
-    color: white;
+    color: inherit;
 }
 
 section a:after {
-    color: #f62;
-    content: "\00a0\21e3";
-    font-size: 50%;
-    font-weight; bold;
+    color: #4cf;
+    content: "\00a0+";
+    font-size: 75%;
+    font-weight: bold;
 }
     
 section a:hover {
-    color: #f62;
+    color: #06f;
 }
 
 

@@ -1,106 +1,5 @@
+/** SLIDE MECHANICS & TRANSITIONS **/
 
-/*
-  html._view { overflow: visible; }
-
-  ._view body { background-color: black; counter-reset: slideidx; 
-
-  ._view section {
-    background-color: #002a44;
-    border-radius: 12px;
-    color: white;
-    text-shadow: #000011 2px 2px 2px;
-  }
-
-  ._view section {
-    pointer-events: auto;
-    position: static;
-    width: 800px; height: 600px;
-    margin: -150px -200px;
-    float: left;
-
-    transform: scale3d(.4);
-    -moz-transform: scale3d(.4);
-    -webkit-transform: scale3d(.4);
-    -o-transform: scale3d(.4);
-    -ms-transform: scale3d(.4);
-  }
-  ._view section > * { pointer-events: none; }
-
-  ._view body {
-    position: static;
-    margin: 0; padding: 0;
-    width: 100%; height: 100%;
-    display: inline-block;
-    overflow: visible; overflow-x: hidden;
-    transform: none !important;
-    -moz-transform: none !important;
-    -webkit-transform: none !important;
-    -o-transform: none !important;
-    -ms-transform: none !important;
-  }
-  ._view head, ._view head > title { display: block }
-
-  ._view section:after {
-    counter-increment: slideidx;
-    content: counter(slideidx, decimal-leading-zero);
-    position: absolute; bottom: -80px; right: 100px;
-    color: white;
-  }
-
-  ._view head > title {
-    color: white;
-    text-align: center;
-    margin: 1em 0 1em 0;
-  }
-
-  ._view section {
-    -moz-transition: none;
-    -webkit-transition: none;
-    -ms-transition: none;
-    transition: none;
-  }
-
-  ._view section[aria-selected] {
-    border: 5px red solid;
-  }
-
-  ._view #progress-bar {
-    display: none;
-  }
-
-*/
-
-/** SLIDE MECHANICS / TRANSITIONS **/
-
-/* All slides and earlier slides */
-section {
-        left: 0;
-        display: block;
-        opacity: 0;
-        overflow: hidden;
-
-        -webkit-transition: opacity 0ms;
-           -moz-transition: opacity 0ms;
-            -ms-transition: opacity 0ms;
-                transition: opacity 0ms;
-
-}
-
-/* Later slides */
-section[aria-selected] section,  section[aria-selected] ~ section,  section[aria-selected] ~* section,  [aria-parent] ~ section,  [aria-parent] ~* section {
-}
-
-/* Current slide */
-section[aria-selected] {
-        -webkit-transform: none;
-           -moz-transform: none;
-            -ms-transform: none;
-                transform: none;
-        opacity: 1;
-}
-
-
-  
 
   /* Incremental elements */
 
@@ -112,6 +11,11 @@ section[aria-selected] {
 
   /* The items to-be-selected */
   ._incremental > *[aria-selected] ~ * { opacity: 0; }
+
+  /* The help text. Only display in overview mode */
+  #help {
+    display: none;
+  }
 
   /* The progressbar, at the bottom of the slides, show the global
      progress of the presentation. */
@@ -161,7 +65,11 @@ section[aria-selected] {
   }
 
 
-  * { margin: 0; padding: 0; -moz-box-sizing: border-box; -webkit-box-sizing: border-box; box-sizing: border-box; }
+  * { 
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+  }
   [role="note"] { display: none; }
   body {
     width: 1400px; height: 1200px;
@@ -170,13 +78,13 @@ section[aria-selected] {
     /*overflow: hidden;*/
     display: none;
   }
+
   section {
     position: absolute;
     pointer-events: none;
     width: 100%; height: 100%;
   }
   section[aria-selected] { pointer-events: auto; }
-  html { overflow: hidden; }
   body._loaded { display: block; }
   ._incremental {visibility: hidden; }
   ._incremental[active] {visibility: visible; }
@@ -189,66 +97,3 @@ section[aria-selected] {
     transition: width 200ms linear 0s;
   }
 
-#edit {
-    background-color: black;
-    width: 100%;
-    height: 100%;
-    position: fixed;
-    top: 0;
-    left: 0;
-    z-index: 10;
-    color: #0c0;
-    font-size: 20px;
-    font-family: monospace;
-    visibility: hidden;
-    padding: 20px;
-    overflow: scroll;
-}
-
-#edit input {
-    color: white;
-    font-family: monospace;
-    font-size: 24px;
-    background-color: #600;
-    padding: 2px 2px 2px 1em;
-    color: white;
-    border: none;
-    width: 100%;
-}
-
-#edit input._type {
-    color: #0f0;
-    background-color: transparent;
-    font-size: 12px;
-}
-
-#edit input._type:focus {
-    color: #0f0;
-    background-color: #040;
-}
-
-#edit input._no_slide {
-    background-color: transparent;
-}
-
-#edit input:focus {
-    background-color: #c0f;
-}
-
-#edit input._no_slide:focus {
-    background-color: #00f;
-}
-
-#edit input._highlight {
-    background-color: #c00;
-}
-
-#edit input._highlight:focus {
-    background-color: #c0f;
-}
-
-
-#edit div div {
-    padding-left: 60px;
-    border: none;
-}

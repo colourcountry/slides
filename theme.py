@@ -56,6 +56,7 @@ class Theme:
                     if 'css' in v:
                         result = getFile(os.path.join(THEME_ROOT,v['css']))
                         if k is not None:
+                            # FIXME: this is nasty
                             result = result.replace('.x', '.'+k)
                         self.css[k] = result
                     if 'inherit' in v:
@@ -73,7 +74,12 @@ class Theme:
         if style in self.js:
             return '''var x = function(pr, defn){ '''+inherit+'''.call(this, pr, defn); this.add_class("'''+style+'''"); };
 x.prototype = new '''+inherit+'''();
-'''+self.js[style]+'''
+var newProps = '''+self.js[style]+'''
+for (var prop in newProps) {
+    if (newProps.hasOwnProperty(prop)) {
+        x.prototype[prop] = newProps[prop];
+    }
+}
 Pr.types["'''+style+'''"] = x;
 '''
         else:

@@ -1,1 +1,3 @@
-x.prototype.grid_position = 'se';
+{
+    grid_position : 'se'
+}

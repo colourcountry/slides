@@ -1,1 +1,4 @@
-x.prototype.suppress_child = true;
+{
+    suppress_child : true
+}
+
