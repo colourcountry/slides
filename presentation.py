@@ -5,7 +5,6 @@ import slide
 
 MINIMIZE = False
 
-SERVER_URL = "http://localhost:8080"
 THEME = theme.Theme()
 
 def identity(x):
@@ -18,21 +17,22 @@ if MINIMIZE:
         import rjsmin as mjsmin
         jsmin = mjsmin.jsmin
     except ImportError:
-        pass
+        sys.stderr.write("Couldn't import rjsmin, running without minimization")
     try:
         import cssmin as mcssmin
         cssmin = mcssmin.cssmin
     except ImportError:
-        pass
+        sys.stderr.write("Couldn't import cssmin, running without minimization")
 
 
-HELPERS = jsmin(open('helpers.js','r').read())
-SLIDES = jsmin(open('slides.js','r').read())
-CORE = jsmin(open('core.js','r').read())
-TYPES = jsmin(open('types.js','r').read())
-CORE_CSS = cssmin(open('core.css','r').read())
-EDITOR_CSS = cssmin(open('editor.css','r').read())
-OVERVIEW_CSS = cssmin(open('overview.css','r').read())
+HELPERS = open('helpers.js','r').read()
+SLIDES = open('slides.js','r').read()
+CORE = open('core.js','r').read()
+TYPES = open('types.js','r').read()
+CORE_CSS = open('core.css','r').read()
+EDITOR_CSS = open('editor.css','r').read()
+OVERVIEW_CSS = open('overview.css','r').read()
+BODY = open('body.html','r').read()
 
 ALL_CSS = ''
 ALL_JS = HELPERS + SLIDES + CORE + TYPES
@@ -44,12 +44,16 @@ for style in THEME.styles:
 
 ALL_CSS += CORE_CSS + EDITOR_CSS + OVERVIEW_CSS
 
+MIN_CSS = cssmin(ALL_CSS)
+MIN_JS = jsmin(ALL_JS)
 
+def build(rootId, cacheJson, serverUrl):
+    css = MIN_CSS
+    js = MIN_JS
 
-def build(rootId, cacheJson):
-    css = ALL_CSS
-    js = ALL_JS
+    body = BODY
 
+    
     output = '''<!DOCTYPE html>
 <html class="_view">
     <head>
@@ -60,7 +64,8 @@ def build(rootId, cacheJson):
         </style>
         <script id="scripts">
 %s
-Pr.root_id = "%s";
+Pr.root_id = '%s';
+Pr.std_body = '%s';
         </script>
         <script id="cache">
 /* this cache was delivered from server */
@@ -68,16 +73,9 @@ Pr.server_url = %s;
 Pr.cache = %s;
         </script>
     </head>
-    <body id="body">
-        <div id="help"><tt>Space</tt> / <tt>← →</tt> Navigate | <tt>+</tt> Insert detail | <tt>&minus;</tt> Remove detail | <tt>Space</tt> / <tt>O</tt> Begin presentation or re-enter overview | <tt>Esc</tt> Edit | <i>ALPHA software!</i> Feedback to <tt>@colourcountry</tt></div>
-        <div id="slide-count"></div>
-        <div id="new-button"><a href="#1.0">New</a></div>
-        <div id="save-button"><a href="#1.0" download="presentable.html">Save</a></div>
-        <div id="slide-container"></div>
-        <div id="progress-bar"></div>
-        <div id="edit"></div>
-    </body></html>
-''' % (css, js, rootId, json.dumps(SERVER_URL), cacheJson)
+    %s
+</html>
+''' % (css, js, rootId, body.replace('\n',' '), json.dumps(serverUrl), cacheJson, body)
     return output
     
 

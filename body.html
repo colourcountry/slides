@@ -1,0 +1,35 @@
+<body id="body">
+        <div id="slide-count"></div>
+        <div id="controls">
+            <div>
+                    <button id="new-button"><a href="#1.0">New</a></button>
+                    <button id="save-button"><a href="#1.0" download="presentable.html">Save</a></button>
+                    <span>
+                        <button id="key-o" class="_highlight" onclick="Dz.toggleView()"><kbd>O</kbd> Toggle overview</button>
+                    </span>
+                    <span>
+                        <button id="key-left" onclick="Dz.back()"><kbd>←</kbd> Previous slide</button>
+                        <button id="key-space" onclick="Dz.startPresentation()"><kbd>Space</kbd> Continue</button>
+                        <button id="key-right" onclick="Dz.forward()"><kbd>→</kbd> Next slide</button> 
+                    </span>
+                    <span>
+                        <button id="key-plus" onclick="Dz.in()"><kbd>+</kbd> Insert detail</button>
+                        <button id="key-minus" onclick="Dz.out()"><kbd>&minus;</kbd> Remove detail</button>
+                    </span>
+                    <span>
+                        <button id="key-r" onclick="Dz.goRandom()"><kbd>R</kbd> Random slide</button>
+                        <button id="key-esc" onclick="Dz.toggleEdit()"><kbd>Esc</kbd> Toggle editor</button> 
+                    </span>
+            </div>
+            <div>
+                <div>
+                    Content from <a id="server">(unknown)</a>.
+                    presentable Version 0.3.0
+                    <i>ALPHA software!</i> Feedback to <a href="https://twitter.com/colourcountry"><tt>@colourcountry</tt></a>
+                </div>
+            </div>
+        </div>
+        <div id="slide-container"></div>
+        <div id="progress-bar"></div>
+        <div id="edit"></div>
+</body>

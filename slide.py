@@ -130,10 +130,15 @@ class Slide:
         d = '{\n' # put each slide on its own line despite above
         for k, v in sorted(self.dict(unroll=unroll).items()):
             d += json.dumps(k)+':'+json.dumps(v, separators=separators)+',\n'
-        return d[:-2]+'\n}\n'
+        result = d[:-2]+'\n}\n'
+        sys.stderr.write("Prepared JSON:\n%s\n" % result)
+        return result
 
 
-    def dict(self, unroll=None):
+    def dict(self, unroll=None, parentIds=None):
+
+        if parentIds is None:
+            parentIds = set()
 
         defn = { 'id': self.id, 'n': self.niceName, 'c':[child.id for child in self.content] }
 
@@ -148,12 +153,13 @@ class Slide:
 
         result = { self.id: defn }
 
-        if unroll is None or unroll>0:
+        if (unroll is None or unroll>0) and self.id not in parentIds:
+            parentIds.add(self.id)
             for child in self.content:
                 if unroll is None:
-                    result.update(child.dict(unroll=None))
+                    result.update(child.dict(unroll=None, parentIds=parentIds))
                 else:
-                    result.update(child.dict(unroll=unroll-1))
+                    result.update(child.dict(unroll=unroll-1, parentIds=parentIds))
 
         return result
 

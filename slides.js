@@ -94,7 +94,7 @@
           aEvent.preventDefault();
           this.getHelp();
         } else
-        if (aEvent.keyCode == 79) { // o
+        if (aEvent.keyCode == 79 || aEvent.keyCode == 48) { // o 0
           aEvent.preventDefault();
           this.toggleView();
         } else
@@ -341,8 +341,12 @@
   }
 
   Dz.goRandom = function() {
-    var randIdx = Math.floor(Math.random()*this.slides.length);
-    this.setCursorByIndex(randIdx + 1, 0);
+    var randIdx = this.idx;
+    while (randIdx == this.idx) {
+        var randIdx = Math.floor(Math.random()*this.slides.length) + 1;
+    }
+    console.debug("jump to "+randIdx+" from "+this.idx);
+    this.setCursorByIndex(randIdx, 0);
   }
 
   Dz.toggleView = function() {

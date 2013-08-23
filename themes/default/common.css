@@ -23,43 +23,43 @@ body {
     color: #4cf;
 }
 
-#slide-container>.cs>.cs section {
+#slide-container>._cs>._cs section {
     color: #ffa;
 }
 
-#slide-container>.cs>.cs>.cs section {
+#slide-container>._cs>._cs>._cs section {
     color: #fc8;
 }
 
-#slide-container>.cs>.cs>.cs>.cs section {
+#slide-container>._cs>._cs>._cs>._cs section {
     color: #fbb;
 }
 
-#slide-container>.cs>.cs>.cs>.cs>.cs section {
+#slide-container>._cs>._cs>._cs>._cs>._cs section {
     color: #faf;
 }
 
-#slide-container>.cs ._section-head {
+#slide-container>._cs ._section-head {
     color: white;
 }
 
-#slide-container>.cs>.cs ._section-head {
+#slide-container>._cs>._cs ._section-head {
     color: white;
 }
 
-#slide-container>.cs>.cs>.cs ._section-head {
+#slide-container>._cs>._cs>._cs ._section-head {
     color: #ffa;
 }
 
-#slide-container>.cs>.cs>.cs>.cs ._section-head {
+#slide-container>._cs>._cs>._cs>._cs ._section-head {
     color: #fc8;
 }
 
-#slide-container>.cs>.cs>.cs>.cs>.cs ._section-head {
+#slide-container>._cs>._cs>._cs>._cs>._cs ._section-head {
     color: #fbb;
 }
 
-#slide-container>.cs>.cs>.cs>.cs>.cs>.cs ._section-head {
+#slide-container>._cs>._cs>._cs>._cs>._cs>._cs ._section-head {
     color: #faf;
 }
 
@@ -144,11 +144,14 @@ section td {
 }
 
 section a {
-    text-decoration: none;
     color: inherit;
 }
 
-section a:after {
+section a[onclick] {
+    text-decoration: none;
+}
+
+section a[onclick]:after {
     color: #4cf;
     content: "\00a0+";
     font-size: 75%;
@@ -180,6 +183,23 @@ section blockquote:after {
     content: close-quote;
 }
 
+section q {
+    display: block;
+    background-color: black;
+    border-radius: 30px;
+    padding: 30px;
+    margin: 20px;
+    text-indent: 0;    
+}
+
+section q:before {
+    content: open-quote;
+}
+
+section q:after {
+    content: close-quote;
+}
+
 section pre {
     text-align: left;
     background-color: black;
@@ -188,6 +208,11 @@ section pre {
     margin: 40px 0 40px 0;
     padding: 20px;
     overflow: hidden;
+}
+
+section kbd {
+    background-color: #444;
+    padding: 0 20px;
 }
 
 /* Common styles for object slides (most of them) */

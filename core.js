@@ -1,10 +1,11 @@
 var Pr = {
     cache: {},
-    helpCache: {"1":{"id":1,"n":"Help","c":[2]},"2":{"id":2,"p":1,"n":"TODO","c":[]}},
     types: {},
     root_id: null,
-    default_type: 'text',
-    server_url: ''
+    default_type: 'html',
+    server_url: '',
+    std_body: '',
+    net_required: {}
 };
 
 Pr.init = function(dz) {
@@ -37,7 +38,15 @@ Pr.init = function(dz) {
             }.bind(this));
         }
 
-        $('#title').innerHTML = this.cache[this.root_id].n;
+        $('#title').firstChild.nodeValue = this.cache[this.root_id].n;
+
+        if (this.server_url) {
+            var server = $('#server');
+            server.firstChild.nodeValue = this.server_url;
+            server.href = this.server_url;
+        } else {
+            $('#server').innerHTML = "<i>No server</i>";
+        }
 
         if (typeof Blob == 'undefined') {
             console.warn("No blob support. Removing save button");
@@ -67,18 +76,17 @@ Pr.update_save_url = function() {
         baked_cache[i] =  baked_item;
     };
 
-    var std_head = '<!DOCTYPE html><html><head><title id="title">?</title><meta charset="utf-8"><style id="styles">'+$('#styles').innerHTML+'</style><script id="scripts">'+$('#scripts').innerHTML+'</'+'script>';
-    var std_body = '<body id="body"><div id="slide-count"></div><div id="new-button"><a href="#1.0">New</a></div><div id="save-button"><a href="#1.0">Save</a></div><div id="slide-container"></div><div id="progress-bar"></div><div id="edit"></div></body>';
+    var std_head = '<!DOCTYPE html><html class="_view"><head><title id="title">?</title><meta charset="utf-8"><style id="styles">'+$('#styles').innerHTML+'</style><script id="scripts">'+$('#scripts').innerHTML+'</'+'script>';
     var save_blob = '' + std_head;
     if (Pr.server_url) {
         save_blob += '<script id="server-url">Pr.server_url = '+JSON.stringify(Pr.server_url)+';</'+'script>';
     }
 
-    save_blob += '<script id="cache">Pr.cache = '+JSON.stringify(baked_cache)+';</'+'script></head>'+std_body+'</html>';
+    save_blob += '<script id="cache">Pr.cache = '+JSON.stringify(baked_cache)+';</'+'script></head>'+this.std_body+'</html>';
     var save_url = window.URL.createObjectURL(new Blob([save_blob],{'type':'application/octet-stream'}));
 
     // FIXME don't regenerate this all the time it's stupid
-    var new_blob = std_head+'<script id="cache">Pr.cache = {"1":{"id":1,"n":"New Presentable","c":[2]},"2":{"id":2,"p":1,"n":"Press Escape to edit","c":[]}};</'+'script></head>'+std_body+'</html>';
+    var new_blob = std_head+'<script id="cache">Pr.cache = {"1":{"id":1,"n":"New Presentable","c":[2]},"2":{"id":2,"p":1,"n":"Press Escape to edit","c":[]}};</'+'script></head>'+this.std_body+'</html>';
     var new_url = window.URL.createObjectURL(new Blob([new_blob],{'type':'text/html'}));
 
     var old_save_url = $('#save-button a').href;
@@ -158,6 +166,16 @@ Pr.update_type = function(defn) {
     return defn.t;
 }
 
+Pr.add_net_required = function(id) {
+    this.net_required[id] = true;
+    console.debug("Item "+id+" requires net, now "+JSON.stringify(this.net_required));
+}
+
+Pr.is_net_required = function(id) {
+    return (typeof this.net_required[id] != "undefined" && this.net_required[id]);
+}
+
+
 Pr.get_section = function(id) {
     console.debug("get_section "+id);
     /* we can be sure it's in the cache already */
@@ -165,7 +183,12 @@ Pr.get_section = function(id) {
 
     defn.t = this.update_type(defn);
 
+    if (typeof defn.t.net_required != 'undefined' || defn.t.net_required) {
+        this.add_net_required(id);
+    }
+
     if (typeof defn.c == 'undefined') {
+        console.warn("Content of slide "+id+" has not been downloaded")
         var content = '<section id="s'+id+'"><h1>'+this.html(text)+'</h1>';
         return content + '<p><a href="'+this.get_href(id)+'">This slide has content which has not been downloaded.</a></p>';
     } else if (defn.c.length > 0) {
@@ -174,8 +197,14 @@ Pr.get_section = function(id) {
             var child = this.cache[defn.c[i]];
             child.t = this.update_type(child);
             children_defn.push(child);
+            if (typeof child.t.net_required != 'undefined' || child.t.net_required) {
+                this.add_net_required(id);
+            }
         }
+        console.debug("endering slide "+id+" ("+defn.n+", "+defn.t.toString()+", "+children_defn.length+" items)");
+
         return defn.t.slide_view(children_defn);
+
     } else {
         /* no children, do not expand */
         return '';
@@ -191,10 +220,17 @@ Pr.get_slides = function(id, unroll) {
     var content = '';
 
     var section = this.get_section(id);
+    var c_lass = '';
+
     if (section) {
-        var c_lass='class="ss"';
-    } else {
-        var c_lass='';
+        c_lass+='_ss ';
+        if (this.is_net_required(id)) {
+            c_lass+='_net ';
+        }
+    }
+
+    if (c_lass) {
+        c_lass = 'class="'+c_lass+'"';
     }
 
     if (typeof defn.c == 'undefined') {
@@ -205,9 +241,9 @@ Pr.get_slides = function(id, unroll) {
         content = '<div id="ss'+id+'" '+c_lass+'>'+this.get_section(id) + '</div><div id="cs'+id+'"></div>';
     } else if (unroll == 0) {
         /* this means there might be content that awaits unrolling */
-        content = '<div id="ss'+id+'" '+c_lass+'>'+this.get_section(id) + '</div><div id="cs'+id+'" class="cs" pr-unroll="true"></div>';
+        content = '<div id="ss'+id+'" '+c_lass+'>'+this.get_section(id) + '</div><div id="cs'+id+'" class="_cs" pr-unroll="true"></div>';
     } else {
-        content = '<div id="ss'+id+'" '+c_lass+'>'+this.get_section(id) + '</div><div id="cs'+id+'" class="cs">' + get_child_slides(defn.c, unroll-1) + '</div>';
+        content = '<div id="ss'+id+'" '+c_lass+'>'+this.get_section(id) + '</div><div id="cs'+id+'" class="_cs">' + get_child_slides(defn.c, unroll-1) + '</div>';
     }
     return content;
 };

@@ -12,8 +12,8 @@
   /* The items to-be-selected */
   ._incremental > *[aria-selected] ~ * { opacity: 0; }
 
-  /* The help text. Only display in overview mode */
-  #help {
+  /* The buttons & help text. Only display in overview mode */
+  #controls {
     display: none;
   }
 
@@ -22,36 +22,6 @@
   #progress-bar {
     height: 2px;
     background: #AAA;
-  }
-
-  /* New link. */
-  #new-button {
-    position: absolute;
-    bottom: 70px;
-    left: 1420px;
-    background-color: #222;
-    border: 2px outset #222;
-    padding: 2px;
-  }
-
-  /* Save link. */
-  #save-button {
-    position: absolute;
-    bottom: 40px;
-    left: 1420px;
-    background-color: #222;
-    border: 2px outset #222;
-    padding: 2px;
-  }
-
-  #save-button a, #new-button a {
-    text-decoration: none;
-    color: #ccc;
-  }
-
-  #save-button a:visited, #new-button a:visited {
-    text-decoration: none;
-    color: #ccc;
   }
 
   /* Slide info. */

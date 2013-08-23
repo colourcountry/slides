@@ -6,28 +6,21 @@ import presentation
 import bottle
 bottle.debug(True)
 
-MINIMIZE = False
-
-def identity(x):
-    return x
-
-jsmin = cssmin = identity
-
-if MINIMIZE:
-    try:
-        import rjsmin as mjsmin
-        jsmin = mjsmin.jsmin
-    except ImportError as e:
-        sys.stderr.write("ImportError when importing jsmin: %s" % e)
-    try:
-        import cssmin as mcssmin
-        cssmin = mcssmin.cssmin
-    except ImportError as e:
-        sys.stderr.write("ImportError when importing cssmin: %s" % e)
-
 MY_PATH = os.path.dirname(__file__)
+SERVER_URL = "http://localhost:8080"
 
 sys.path.append(MY_PATH)
+
+@bottle.route('/')
+def getRoot(name):
+    bottle.response.status = 200
+
+    return '''<html>
+<body>
+    <h1>Presentable server</h1>
+</body>
+</html>
+'''
 
 @bottle.route('/extract/<name>')
 def getJson(name):
@@ -51,14 +44,14 @@ def getOffline(name):
     thisSlide = slide.Slide.get(name)
     json = thisSlide.json( unroll=unroll )
 
-    return presentation.build(name, json)
+    return presentation.build(name, json, SERVER_URL)
 
 
 @bottle.route('/presentation/<name>')
 def getSlides(name):
     bottle.response.status = 200
 
-    return presentation.build(name, '{}')
+    return presentation.build(name, '{}', SERVER_URL)
 
 
 # Older online system below.

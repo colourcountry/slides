@@ -1,6 +1,6 @@
 {
     value : function() {
-        return '<div style="background-color: '+this.html(this.defn.n)+'"></div>';
+        return '<div style="background-color: '+this.sanitize_text(this.defn.n)+'"></div>';
     },
 
     toString : function() {

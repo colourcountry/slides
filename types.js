@@ -4,10 +4,27 @@ Ty = function(pr, defn){
     this.c_lass = [];
 };
 
-Ty.prototype.HTML_UNSAFE = { '"': '&quot;', '&': '&amp;', '<': '&lt;', '>': '&gt;', '\\n': '\n' };
+Ty.prototype.TEXT_REPLACE = { '"': '&quot;', '&': '&amp;', '<': '&lt;', '>': '&gt;', '\\n': '\n' };
 
-Ty.prototype.html = function(text) {
-    return text.replace(/[\"&<>]|\\n/g, function (a) { return this.HTML_UNSAFE[a]; }.bind(this));
+Ty.prototype.sanitize_text = function(text) {
+    return text.replace(/[\"&<>]|\\n/g, function (a) { return this.TEXT_REPLACE[a]; }.bind(this));
+};
+
+/* These are all the defensible inline elements in HTML5 in my humble opinion */
+Ty.prototype.HTML_REPLACE = { 'a': 'a', 'abbr': 'abbr', 'b': 'b',  'cite': 'cite', 'del': 'del',
+                              'dfn': 'dfn', 'em': 'em', 'i': 'i', 'ins': 'ins',
+                              'kbd': 'kbd', 'mark': 'mark', 'q': 'q', 'small': 'small',
+                              'span': 'span', 'strong': 'strong', 'sub': 'sub',
+                              'sup': 'sup', 'time': 'time', 'var': 'var' };
+
+Ty.prototype.sanitize_html = function(html) {
+    return html.replace(/<([/]?)([^ >]+)([^>]*)>/g, function (a, s, p, x) {
+        if (typeof this.HTML_REPLACE[p] == "undefined") {
+            return "";
+        } else {
+            return "<"+s+this.HTML_REPLACE[p.toLowerCase()]+x+">";
+        }
+    }.bind(this)).replace('\\n','\n');
 };
 
 Ty.prototype.get_href = function(id) {
@@ -43,7 +60,7 @@ Ty.prototype.get_class = function() {
 Ty.prototype.object_view = function(children) {
 
     var section_attrs = '';
-    var section_head = '<div class="_section-head"><h1>'+this.html(this.defn.n)+'</h1>';
+    var section_head = '<div class="_section-head"><h1>'+this.get_title()+'</h1>';
     var section_before = '';
     var section_left = '';
     var section_after = '';

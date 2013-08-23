@@ -105,11 +105,29 @@ Small amount of help
 Space leaves overview or advances
 Click in overview page to change focus
 More self-explanatory default presentation
----
+Fix minifier
 Move new/save buttons onto overview screen
+Warn user when current presentation requires internet access
+Support safe inline html tags
+Default type is html not text
 Make help text into active buttons for tablet usability
+Random slide excludes current slide
+Nicer buttons
+Fix slide margins in overview (not sure how that worked)
+Use keys as slide titles if supplied
+Stop loops causing a recursion error
+Allow 0 or O to move to overview mode (just in case)
+---
+Allow children some control over their parent list item (codeblock, note, warning, etc)
+Disambiguate slide ids arising from loops (doh)
+Allow loopy slides to unroll (not very useful but least surprise)
+Editor doesn't get scroll bar even when visible
+Button to revert last edit session
+Way for tablet people to return to overview
+Way for tablet people to exit editor mode
 Fix nasty .x CSS stuff
-Bug: unroll doesn't work perfectly when adding children -- have to go up and down to fix
+Change URL syntax to store unroll state
+Bug: unroll from editor doesn't work perfectly when adding children -- have to go up and down to fix
 Bug: background colors/images are not aligned to slide
 More help
 Remove item in edit window by removing all content and defocusing
@@ -133,5 +151,4 @@ Different list styles - multi-generation - mind map
 <<< 3.0
 Export presentation to PDF (is this useful?)
 Edit on client and submit to server
-Hash-urls to subslides (need to change URL syntax to do this as don't know what has been unrolled---bookmarkable, but maybe confusing?)
 Client can save itself locally and submit later

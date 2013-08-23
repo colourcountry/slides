@@ -1,32 +1,36 @@
-Just a regular presentation
-    Press Space to start
-        Press Space or ← → to move through the slides
-        You started in overview mode, press O to return there
+[A regular presentation] A regular presentation
+    Press <kbd>Space</kbd> to start
+        Press <kbd>Space</kbd> or <kbd>←</kbd> <kbd>→</kbd> to move through the slides
+        You started in overview mode, press <kbd>O</kbd> to return there
         In overview mode, click on a slide to jump to it
     But there's more
-        Press + now
+        [+] Press <kbd>+</kbd> now
             Sometimes a bullet point has a + after it
-            Pressing + expands all the points with + to become their own slides
+            When you press <kbd>+</kbd>, all the points with + unroll to become their own slides
             The original slide now serves as a section overview
             Try it again!
                 right image:http://placekitten.com/400/400
                 Return to overview mode to see your changes
                 You can also unroll in overview mode
             Why is that useful?
-                You don't have to decide levels of detail before the presentation
-                If your audience is really interested in a topic, you can deep dive right there
-                    No need to customize presentations, just bring all your slides and make decisions as you go
-                    More sleep on long flights!
-            Press − to roll up one level of detail
-                If you run out of time, you can skip whole sections this way
-                after: ...or if the audience gets bored...
+                Enables you to choose: <q>Does this slide provide enough information for this audience? Or do I need to go into more detail?</q>
+                High-level slides can set the scene
+                [Deep dive] Deep dive into the topics that interest the audience
+                    No need to customize presentations beforehand
+                    No need for "just in case" slides
+                    Easily skip over sections if time is short
+                    Just bring all your slides and make decisions live
+                    Text colour hints at your depth
+            Press <kbd>−</kbd> to roll up one level of detail
     And more
-        Presentations are completely self-contained, apart from images and fonts
+        Presentations are self-contained HTML files <small>(apart from images and fonts)</small>
         So you can use them even if your venue has no Internet access
         Just click the Save button and save it to a memory stick
+        note: HTML 5 in use! Best bring a recent version of Chrome or Firefox with you
     Features for power users
-        Hit Escape to launch a basic editor for fixing typos
-        Click New to save an empty presentation
-    More information
-        subtitle: @colourcountry
+        Hit <kbd>Escape</kbd> to launch a basic editor for fixing typos <small>(very alpha)</small>
+        Click the New buton in overview mode to save an empty presentation
+        A blue border in overview mode warns you if a slide needs Internet access to render properly
+    Thank you!
+        Feedback, suggestions: <a href="http://twitter.com/colourcountry">@colourcountry</a>
  
