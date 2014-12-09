@@ -1,0 +1,30 @@
+#edit {
+    visibility: hidden;
+}
+
+html._edit #edit {
+    background-color: black;
+    position: fixed;
+    width: 100%;
+    bottom: 0;
+    left: 0;
+    z-index: 10;
+    color: #0c0;
+    font-size: 20px;
+    font-family: monospace;
+    visibility: visible;
+    padding: 0;
+    display: flex;
+    flex-flow: column nowrap;
+}
+
+#edit textarea {
+    width: 100%;
+    min-height: 600px;
+    background: #444;
+    color: white;
+    border: none;
+    padding: 20px;
+    flex: 1;
+}
+

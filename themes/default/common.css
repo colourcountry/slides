@@ -144,11 +144,12 @@ section td {
 }
 
 section a {
-    color: inherit;
+    color: #bdf;
 }
 
 section a[onclick] {
     text-decoration: none;
+    color: inherit;
 }
 
 section a[onclick]:after {
@@ -215,6 +216,10 @@ section kbd {
     padding: 0 20px;
 }
 
+section tt {
+    font-face: monospace;
+}
+
 /* Common styles for object slides (most of them) */
 
 ._object ul {
@@ -253,3 +258,28 @@ section kbd {
     text-align: center;
     max-height: 600px;
 }
+
+._warning:before {
+    content: "\26a0";
+    color: #f40;
+    margin-right: 0.1em;
+}
+
+._warning:after {
+    content: "\26a0";
+    color: #f40;
+    margin-left: 0.1em;
+}
+
+._note:before {
+    content: "\2744";
+    color: #0c0;
+    margin-right: 0.1em;
+}
+
+._note:after {
+    content: "\2744";
+    color: #0c0;
+    margin-left: 0.1em;
+}
+

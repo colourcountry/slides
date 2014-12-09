@@ -3,18 +3,17 @@ var Pr = {
     types: {},
     root_id: null,
     default_type: 'html',
+    fallback_type: 'fallback',
     server_url: '',
     std_body: '',
-    net_required: {}
+    net_required: {},
+    text_indent: '. '
 };
 
 Pr.init = function(dz) {
 
     this.find_deck( this.root_id, function(deck) {
-        var slide_html = this.get_slides( deck.id, 0 );
-        $('#slide-container').innerHTML = slide_html;
-
-        console.debug('Inited slide-container with '+slide_html);
+        this.reboot_slides(deck.id);
 
         if (typeof deck.c == 'undefined') {
             console.warn('children of '+deck.id+' not available');
@@ -38,8 +37,6 @@ Pr.init = function(dz) {
             }.bind(this));
         }
 
-        $('#title').firstChild.nodeValue = this.cache[this.root_id].n;
-
         if (this.server_url) {
             var server = $('#server');
             server.firstChild.nodeValue = this.server_url;
@@ -52,8 +49,6 @@ Pr.init = function(dz) {
             console.warn("No blob support. Removing save button");
             var save_button = $('#save-button');
             save_button.parentNode.removeChild(save_button);
-            var new_button = $('#new-button');
-            new_button.parentNode.removeChild(new_button);
         };
 
     }.bind(this));
@@ -84,28 +79,16 @@ Pr.update_save_url = function() {
 
     save_blob += '<script id="cache">Pr.cache = '+JSON.stringify(baked_cache)+';</'+'script></head>'+this.std_body+'</html>';
     var save_url = window.URL.createObjectURL(new Blob([save_blob],{'type':'application/octet-stream'}));
-
-    // FIXME don't regenerate this all the time it's stupid
-    var new_blob = std_head+'<script id="cache">Pr.cache = {"1":{"id":1,"n":"New Presentable","c":[2]},"2":{"id":2,"p":1,"n":"Press Escape to edit","c":[]}};</'+'script></head>'+this.std_body+'</html>';
-    var new_url = window.URL.createObjectURL(new Blob([new_blob],{'type':'text/html'}));
+    console.debug("generated new save URL "+save_url);
 
     var old_save_url = $('#save-button a').href;
     if (old_save_url.substring(0,5)=='blob:') {
         console.debug("revoking old save URL "+old_save_url);
         window.URL.revokeObjectURL(old_save_url);
     }
-    $('#save-button a').href = save_url;
-    $('#save-button a').download = this.cache[this.root_id].n+'.html';
 
-    var old_new_url = $('#new-button a').href;
-    if (old_new_url.substring(0,5)=='blob:') {
-        console.debug("revoking old new URL "+old_new_url);
-        window.URL.revokeObjectURL(old_new_url);
-    }
-
-    // it's nice to make new just go straight in but it's not to be, because blob urls don't take hashes
-    $('#new-button a').href = new_url;
-    $('#new-button a').download = 'new.html';
+    $('#save-link').href = save_url;
+    $('#save-link').download = this.cache[this.root_id].n.replace(/<[^>]+>/g,'')+'.html';
 };
 
 Pr.update_type = function(defn) {
@@ -117,22 +100,22 @@ Pr.update_type = function(defn) {
             if (multiType.length == 1) {
                 /* not a multiple type, just an unknown one */
                 console.debug("Unknown type "+defn.s);
-                defn.t = new this.types[this.default_type](this,defn);
+                defn.t = new this.types[this.fallback_type](this,defn);
             } else {
                 /* construct a multiple "type" (actually a singleton with explicitly set properties) */
                 console.debug("Constructing new type "+defn.s);
-                var newType = (function(typesAvailable) {
+                var newType = (function(cTypesAvailable,cMultiType) {
                     return function(pr, defn){ 
-                        for (var i=0; i<multiType.length; i++) {
-                            if (typeof typesAvailable[multiType[i]] == 'undefined') {
-                                console.debug("Couldn't source type "+multiType[i]);
+                        for (var i=0; i<cMultiType.length; i++) {
+                            if (typeof cTypesAvailable[cMultiType[i]] == 'undefined') {
+                                console.debug("Couldn't source type "+cMultiType[i]+" to construct multi-type "+JSON.stringify(cMultiType));
                             } else {
-                                console.debug("Calling superconstructor "+multiType[i]);
-                                typesAvailable[multiType[i]].call(this, pr, defn);
+                                console.debug("Calling superconstructor "+cMultiType[i]);
+                                cTypesAvailable[cMultiType[i]].call(this, pr, defn);
                             }
                         }
                     };
-                })(this.types);
+                })(this.types, multiType);
                 var tempInstance = new this.types[multiType[multiType.length-1]](this,defn);
                 for (property in tempInstance) {
                     console.debug("Adding property "+property+" from "+multiType[multiType.length-1]);
@@ -181,32 +164,41 @@ Pr.get_section = function(id) {
     /* we can be sure it's in the cache already */
     var defn = this.cache[id];
 
+    console.debug("Updating type "+defn.s+" for "+defn.id);
     defn.t = this.update_type(defn);
+    console.debug("Updated type "+defn.s+" for "+defn.id);
 
     if (typeof defn.t.net_required != 'undefined' || defn.t.net_required) {
         this.add_net_required(id);
     }
 
     if (typeof defn.c == 'undefined') {
-        console.warn("Content of slide "+id+" has not been downloaded")
         var content = '<section id="s'+id+'"><h1>'+this.html(text)+'</h1>';
+        console.warn("Content of slide "+id+" has not been downloaded")
         return content + '<p><a href="'+this.get_href(id)+'">This slide has content which has not been downloaded.</a></p>';
     } else if (defn.c.length > 0) {
         var children_defn = [];
         for (var i=0; i<defn.c.length; i++) {
+            console.debug("updating child "+defn.c[i]+" for "+id);
+            if (typeof this.cache[defn.c[i]] == 'undefined') {
+                console.error("Slide missing from cache: "+defn.c[i]);
+                return '';
+            }
             var child = this.cache[defn.c[i]];
             child.t = this.update_type(child);
+            console.debug("updating child type "+child.s+" for "+defn.c[i]+" child of "+id);
             children_defn.push(child);
             if (typeof child.t.net_required != 'undefined' || child.t.net_required) {
                 this.add_net_required(id);
             }
         }
-        console.debug("endering slide "+id+" ("+defn.n+", "+defn.t.toString()+", "+children_defn.length+" items)");
 
+        console.debug("get_section "+id+" result: ("+defn.n+", "+defn.t.toString()+", "+children_defn.length+" items)");
         return defn.t.slide_view(children_defn);
 
     } else {
         /* no children, do not expand */
+        console.debug("get_section "+id+" result: no children");
         return '';
     }
 };
@@ -338,175 +330,175 @@ Pr.unroll_deck = function(id, cb) {
     }
 };
 
-Pr.populate_editor = function(node, root_id, replace) {
+Pr.convert_to_text = function(root_id, highlight_id, indent) {
+    if (indent == null) {
+        indent = '';
+    }
+    var type = '';
+    if (typeof this.cache[root_id].s != 'undefined' && this.cache[root_id].s != this.default_type) {
+        type = this.cache[root_id].s+': ';
+    }
+    var children_as_text = '';
+    if (typeof this.cache[root_id].c != 'undefined') {
+        for (var i=0; i<this.cache[root_id].c.length; i++) {
+            children_as_text += this.convert_to_text(this.cache[root_id].c[i], highlight_id, indent+this.text_indent );
+        }
+    }
+
+    var highlight_indent = indent;
+    if (root_id == highlight_id && root_id != this.root_id ) {
+        highlight_indent=Array(indent.length).join('>')+' ';
+    }
+
+    return highlight_indent+type+this.cache[root_id].n+'\n'+children_as_text;
+}
+
+Pr.populate_editor = function(node, root_id, highlight_id) {
     var div = document.createElement("div");
-    div.id = "ed"+root_id;
+    div.id = "ed"+root_id; /*FIXME too many divs?*/
     if (typeof this.cache[root_id] == 'undefined') {
         div.innerHTML = '<span>not available</span>';
     } else {
-        if (typeof this.cache[root_id].s == 'undefined') {
-            var type_html = '<input class="_type" id="edt'+root_id+'" value="'+this.default_type+'">';
-        } else {
-            var type_html = '<input class="_type" id="edt'+root_id+'" value="'+this.cache[root_id].s+'">';
-        }
-
-        var content_attr = this.cache[root_id].n.replace(/(&)|(")|(\u00A0)/g, function(match, amp, quote) {
+        var content = this.convert_to_text(root_id, highlight_id).replace(/(&)|(<)|(>)|(\u00A0)/g, function(match, amp, lt, gt) {
             if (amp) return "&amp;";
-            if (quote) return "&quot;";
+            if (lt) return "&lt;";
+            if (gt) return "&gt;";
             return "&nbsp;";
         });
 
-        var input_attrs = '';
-        var slide_section = $('#s'+root_id);
-        if (!slide_section) {
-            // slide has not been unrolled or does not yield a slide
-            // can still edit it but will not jump there on exit
-            input_attrs = 'class="_no_slide"';
-        }
-
-        var input_html = '<input '+input_attrs+' id="edi'+root_id+'" value="'+content_attr+'">';
-
-        div.innerHTML = type_html + input_html;
-
-        if (typeof this.cache[root_id].c != 'undefined') {
-            for (var i=0; i<this.cache[root_id].c.length; i++) {
-                this.populate_editor(div, this.cache[root_id].c[i]);
-            }
-        }
-
-        if (replace) {
-            node.replaceChild(div,replace);
-        } else {
-            node.appendChild(div);
-        }
+        div.innerHTML = '<textarea id="editarea">'+content+'</textarea>';
+        node.appendChild(div);
     }
 };
 
-Pr.update_cache_from_editor = function(root_id) {
-    if (typeof this.cache[root_id] != 'undefined') {
-        var node = $('#edi'+root_id);
-        console.debug('#edi'+root_id+' is '+node);
-        var new_value = $('#edi'+root_id).value;
-        console.debug(new_value);
-        if (new_value) {
-            this.cache[root_id].n = new_value;
-        }
-        if (typeof this.cache[root_id].c != 'undefined') {
-            for (var i=0; i<this.cache[root_id].c.length; i++) {
-                this.update_cache_from_editor(this.cache[root_id].c[i]);
+Pr.reboot_cache_from_string = function(strg) {
+    var lines = strg.split('\n');
+    this.cache = {};
+    console.debug('rebooting cache from '+lines.length+' lines: '+JSON.stringify(lines));
+
+    while (lines[lines.length-1] == "") {
+        lines.pop();
+    }
+
+    if (lines.length == 0) {
+        console.debug('adding placeholder root title');
+        lines.push("New presentation");
+    }
+
+    if (lines.length == 1) {
+        console.debug('adding placeholder first point');
+        lines.push(". Add lines here");
+    }
+
+    if (lines[0] == "") {
+        console.debug('empty title, replacing with placeholder');
+        lines[0] = "Title";
+    }
+
+    console.debug('rebooting cache with '+lines.length+' lines: '+JSON.stringify(lines));
+    return this.update_cache_children_from_lines( 0, lines );
+    console.debug('done rebooting cache');
+};
+
+Pr.update_cache_children_from_lines = function(start_at, lines, parent_id) {
+
+    var root_parts = /(>*[\s.]*)\[([^\]]+)\] *(.*)/.exec( lines[start_at] );
+
+    if ( root_parts != null ) {
+        var root_indent = root_parts[1].length;
+        var root_id = root_parts[2];
+        var root_body = root_parts[3];
+        console.debug('using supplied id in line '+lines[start_at]);
+    } else {
+        root_parts = /(>*[\s.]*)(.*)/.exec( lines[start_at] ); /* always matches */
+        var root_indent = root_parts[1].length;
+        var root_id = ''+(start_at+1); /* FIXME better id generation */
+        var root_body = root_parts[2];
+        console.debug('using new id '+root_id+' in line '+lines[start_at]);
+    }
+
+    if (start_at == 0) {
+        /* The very first line is treated specially:
+           later lines with indent == 0 will be added as children of this slide.
+        */
+        root_indent = -1;
+    }
+
+    var root_body_parts = /^([a-z ]+):\s*(.*)/.exec( root_body );
+
+    if ( root_body_parts != null ) {
+        var root_type = root_body_parts[1];
+        var root_text = root_body_parts[2];
+    } else {
+        var root_type = this.default_type;
+        var root_text = root_body;
+    }
+
+    var child_ids = new Array();
+
+    console.debug('id '+root_id+' => '+root_type+' / '+root_text);
+
+    this.cache[root_id] = { 'id': root_id,
+                            'n': root_text,
+                            's': root_type };
+
+    if ( parent_id ) {
+        this.cache[root_id].p = parent_id;
+    }
+
+    if ( start_at+1 < lines.length ) {
+        var i = start_at+1;
+        var child_indent = (lines[start_at+1].match(/>*[\s.]*/))[0].length;
+        var new_indent = child_indent;
+
+        while (new_indent > root_indent && i < lines.length) {
+            new_indent = (lines[i].match(/>*[\s.]*/))[0].length;
+            if (new_indent > root_indent && new_indent <= child_indent) {
+                child_indent = new_indent;
+                result = this.update_cache_children_from_lines( i, lines, root_id )
+                child_ids.push( result );
             }
+            i += 1;
         }
-    }    
+    }
+
+    this.cache[root_id].c = child_ids;
+    console.debug('Finished '+root_id+': '+JSON.stringify(this.cache[root_id]));
+
+    return root_id;
 };
 
 Pr.reboot_slides = function(root_id) {
-    if (typeof this.cache[root_id] != 'undefined') {
-        slide_div = $('#ss'+root_id);
-        if (slide_div) {
-            slide_div.innerHTML = this.get_section(root_id);
-        }
-        if (typeof this.cache[root_id].c != 'undefined') {
-            for (var i=0; i<this.cache[root_id].c.length; i++) {
-                this.reboot_slides(this.cache[root_id].c[i]);
-            }
-        }
-    }    
+    var slide_html = this.get_slides( root_id, 0 );
+    window.document.title = this.get_title( root_id );
+    $('#slide-container').innerHTML = slide_html;
+    this.root_id = root_id;
+    console.debug('Inited slide-container with '+slide_html);
 };
+
+Pr.get_title = function(root_id) {
+    return this.cache[root_id].n.replace(/<[^>]+>/g, '');
+}
 
 Pr.hide_editor = function(id, reinitCb) {
     var edit_box = $('#edit');
-    console.debug('hiding editor');
-    this.update_cache_from_editor(this.root_id);
+    this.root_id = this.reboot_cache_from_string($('#editarea').value);
+    console.debug('parsed new text definition, root is now '+this.root_id);
     this.reboot_slides(this.root_id);
-    var new_slide = document.activeElement.id;
-    if (new_slide.substring(0,3)=='edi'){
-        console.debug('returning to slide '+new_slide.substring(3));
-        reinitCb(new_slide.substring(3));
-    } else {
-        reinitCb();
-    }
+    console.debug('rebooted slides');
+    reinitCb(this.root_id);
+    console.debug('hiding editor');
     edit_box.innerHTML = '';
 }
 
-Pr.show_editor = function(id) {
+Pr.show_editor = function(current_id) {
     var edit_box = $('#edit');
     console.debug('showing editor');
-    this.populate_editor(edit_box, this.root_id);
-    focus = $('#edi'+id);
-    if (focus) {
-        focus.classList.add("_highlight");
-        focus.focus();
-        focus.selectionStart = 0;
-        focus.selectionEnd = focus.value.length;
-        focus.scrollIntoView();
-    }
+    this.populate_editor(edit_box, this.root_id, current_id);
+    $('#editarea').focus();
 };
 
 Pr.handle_edit_key = function(aEvent) {
-    if (aEvent.keyCode == 38) { // up arrow
-        aEvent.preventDefault();
-        // TODO work like shift-tab?
-    } else
-    if (aEvent.keyCode == 40) { // down arrow
-        aEvent.preventDefault();
-        // TODO work like tab?
-    } else
-    if (aEvent.keyCode == 13) { // enter
-        aEvent.preventDefault();
-        var focus_id = document.activeElement.id.substring(3);
-
-        console.debug("adding to "+focus_id);
-        if (this.cache[focus_id] && typeof this.cache[focus_id].p != 'undefined') {
-
-            // server will promise not to create ids with "x" in
-            // when resyncing with BoK these will get a "real" id
-            var count = 1;
-            while ( this.cache[focus_id+"x"+count] ) {
-                count += 1;
-            }
-            var new_id = focus_id+"x"+count;
-
-            if (aEvent.shiftKey && typeof this.cache[focus_id].c != undefined && this.cache[focus_id].c.length == 0) {
-                console.debug("adding new child "+new_id);
-                var parent_id = focus_id;
-            } else {
-                console.debug("adding new sibling "+new_id);
-                var parent_id = this.cache[focus_id].p;
-            }
-
-            // going to replace parent so ensure all edits are saved
-            this.update_cache_from_editor(parent_id);
-
-            this.cache[new_id] = { n: '',
-                                   id: new_id,
-                                   s: this.default_type,
-                                   p: parent_id,
-                                   c: [] };
-
-            if ( parent_id == focus_id ) {
-                this.cache[parent_id].c = [new_id];
-                console.debug('unrollabilifying #cs'+this.cache[parent_id].p);
-                // need to let the slide code know that the (now grand-)parent is now unrollable
-                //$('#cs'+this.cache[parent_id].p).setAttribute('pr-unroll','true');
-            } else {
-                var sibling_ids = this.cache[parent_id].c;
-                var new_sibling_ids = [];
-                for ( var i=0; i<sibling_ids.length; i++) {
-                    new_sibling_ids.push(sibling_ids[i]);
-                    if (sibling_ids[i] == focus_id) {
-                        new_sibling_ids.push(new_id);
-                    }
-                }
-                this.cache[parent_id].c = new_sibling_ids;
-            }
-
-            console.debug("replacing "+parent_id);
-            replace_node = $('#ed'+parent_id);
-            this.populate_editor(replace_node.parentNode, parent_id, replace_node);
-
-            $('#edi'+new_id).focus();
-        }
-    }
 }
 
 init = function() {

@@ -1,0 +1,18 @@
+section.x {
+    background-color: #510;
+}
+
+section.x h1:before{
+    content: '\26a0';
+    color: #f40;
+    margin-right: 0.5em;
+}
+
+section.x h1:after{
+    content: '\26a0';
+    color: #f40;
+    margin-left: 0.5em;
+}
+
+
+

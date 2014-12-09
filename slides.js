@@ -255,7 +255,7 @@
   }
 
   Dz.setCursor = function(aId, aStep) {
-    // If the user change the slide number in the URL bar, jump
+    // If the user changes the slide number in the URL bar, jump
     // to this slide.
     aStep = (aStep != 0 && typeof aStep !== "undefined") ? "." + aStep : ".0";
     console.debug("setCursor "+aId + aStep);
@@ -284,6 +284,7 @@
     for (var i=0; i<this.slides.length; i++) {
         if (this.slides[i].getAttribute('id').slice(1) == newid) {
             newidx = i+1;
+            console.debug("Going to slide with id "+newid);
         }
     }
 
@@ -385,6 +386,7 @@
         video.play();
       }
       next = next.parentNode;
+      next.scrollIntoView(); /* cheaty way of including border */
       while (next !== document) {
         next.setAttribute("pr-parent", "true");
         next = next.parentNode;
@@ -544,17 +546,19 @@ Dz.out = function() {
 Dz.toggleEdit = function() {
     var deck_id = this.slides[this.idx-1].getAttribute('id').substring(1);
     this.html.classList.toggle("_edit");
+    if (!this.html.classList.contains("_view")) {
+        this.toggleView();
+    }
     if (this.html.classList.contains("_edit")) {
         this.pr.show_editor(deck_id);
         this.onresize();
     } else {
         this.pr.hide_editor(deck_id, function(new_id) {
+            console.debug("Reiniting with root id "+new_id);
             this.reinit();
-            if (new_id && $("#s"+new_id) && window.location.hash != "#" + new_id) {
-                window.location.hash = "#" + new_id;
-            } else {
-                this.onhashchange();
-            }
+            console.debug("Resetting hash to "+new_id);
+            window.location.hash = "#" + new_id + ".0";
+            this.onhashchange(); /* in case we were there already */
             this.onresize();
         }.bind(this));
     };

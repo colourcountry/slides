@@ -61,7 +61,7 @@ Ty.prototype.object_view = function(children) {
 
     var section_attrs = '';
     var section_head = '<div class="_section-head"><h1>'+this.get_title()+'</h1>';
-    var section_before = '';
+    var section_before = '<div class="_section-before">'+this.get_subtitle();
     var section_left = '';
     var section_after = '';
     var section_right = '';
@@ -77,6 +77,7 @@ Ty.prototype.object_view = function(children) {
         if (typeof children[i].t.section_foot != 'undefined') { section_foot += children[i].t.section_foot(this.defn); }
     }
     section_head += '</div>';
+    section_before += '</div>';
 
     if (section_foot) {
         section_foot = '<div class="_section-foot">'+section_foot+'</div>'

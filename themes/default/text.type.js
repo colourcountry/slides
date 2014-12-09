@@ -15,6 +15,10 @@
         }
     },
 
+    get_subtitle : function(children) {
+        return '';
+    },
+
     get_object : function(children) {
         return this.list_view(children, 'ul','li');
     },
