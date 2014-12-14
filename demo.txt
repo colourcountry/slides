@@ -19,6 +19,7 @@
                     Just bring all your slides and make decisions live
                     Text colour hints at your depth <small>(if you are using the default style)</small>
             Press <kbd>−</kbd> to roll one level back up
+        <small>If <kbd>+</kbd> doesn't work, try <kbd>Page Down</kbd></small>
             
     Fully portable
         Self-contained HTML file <small>apart from images and fonts</small>

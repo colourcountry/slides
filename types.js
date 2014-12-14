@@ -1,4 +1,4 @@
-Ty = function(pr, defn){ 
+var Ty = function(pr, defn){ 
     this.defn = defn;
     this.pr = pr;
     this.c_lass = [];
@@ -37,7 +37,7 @@ Ty.prototype.toString = function() {
 
 Ty.prototype.add_class = function(className) {
     var found = false;
-    for (i=0; i<this.c_lass.length; i++) {
+    for (var i=0; i<this.c_lass.length; i++) {
         if (this.c_lass[i]==className) {
             found = true;
         }
@@ -50,7 +50,7 @@ Ty.prototype.add_class = function(className) {
 Ty.prototype.get_class = function() {
     var result = '';
     if (typeof this.c_lass != 'undefined') {
-        for (i=0; i<this.c_lass.length; i++) {
+        for (var i=0; i<this.c_lass.length; i++) {
             result += this.c_lass[i] + ' ';
         }
     }
@@ -83,7 +83,7 @@ Ty.prototype.object_view = function(children) {
         section_foot = '<div class="_section-foot">'+section_foot+'</div>'
     }
 
-    response = '<section class="'+this.get_class()+'" id="s'+this.defn.id+'"'+section_attrs+'>'+section_head;
+    var response = '<section class="'+this.get_class()+'" id="s'+this.defn.id+'"'+section_attrs+'>'+section_head;
     response += '<table><col class="_left"><col class="_object"><col class="_right"><tr><td></td><td class="_before">'+section_before+'</td><td></td></tr>';
     response += '<tr><td class="_left">'+section_left+'</td><td class="_object">'+this.get_object(children)+'</td><td class="_right">'+section_right+'</td></tr>';
     response += '<tr><td></td><td class="_after">'+section_after+'</td><td></td></tr></table>';
@@ -93,15 +93,17 @@ Ty.prototype.object_view = function(children) {
 
 Ty.prototype.list_view = function(children, container, item) {
 
+    var cl_item = '';
+
     if (typeof item == 'undefined' || item == '') {
-        cl_item = '';
         item = '';
     } else {
         cl_item = '</'+item+'>';
     }
 
+    var cl_container = '';
+
     if (typeof container == 'undefined' || container == '') {
-        cl_container = '';
         container = '';
     } else {
         cl_container = '</'+container+'>';

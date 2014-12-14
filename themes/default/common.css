@@ -217,7 +217,7 @@ section kbd {
 }
 
 section tt {
-    font-face: monospace;
+    font-family: monospace;
 }
 
 /* Common styles for object slides (most of them) */

@@ -33,13 +33,66 @@
     var p = window.location.search.substr(1).split('&');
     p.forEach(function(e, i, a) {
       var keyVal = e.split('=');
-      Dz.params[keyVal[0]] = decodeURIComponent(keyVal[1]);
+      if ( keyVal.length == 2 ) {
+          Dz.params[keyVal[0]] = decodeURIComponent(keyVal[1]);
+      } else {
+          console.warn('Unexpected syntax for parameters: '+e);
+      }
     });
+
   // Specific params handling
     if (!+this.params.autoplay)
       $$.forEach($$("video"), function(v){ v.controls = true });
   }
 
+  /* Need to handle onkeypress for ASCII-printable characters */
+  Dz.onkeypress = function(aEvent) {
+    // Don't intercept keyboard shortcuts
+    if (aEvent.altKey
+      || aEvent.ctrlKey
+      || aEvent.metaKey) {
+      return;
+    }
+
+    // Handle firefox (http://www.quirksmode.org/js/keys.html)
+    var asciiCode = aEvent.keyCode || aEvent.charCode;
+
+    if (!this.html.classList.contains("_edit")) {
+        if (asciiCode == 45 || asciiCode == 95 ) { // minus or underscore (same key on my keyboard)
+          aEvent.preventDefault();
+          this.out();
+        } else
+        if (asciiCode == 43 || asciiCode == 61 ) { // plus or equals (same key on my keyboard)
+          aEvent.preventDefault();
+          this.in();
+        } else
+        if (asciiCode == 70 || asciiCode == 102 ) { // f
+          aEvent.preventDefault();
+          this.goFullscreen();
+        } else
+        if (asciiCode == 72 || asciiCode == 104 ) { // h
+          aEvent.preventDefault();
+          this.getHelp();
+        } else
+        if (asciiCode == 79 || asciiCode == 111 || asciiCode == 48) { // o 0
+          aEvent.preventDefault();
+          this.toggleView();
+        } else
+        if (asciiCode == 32) { // space
+          aEvent.preventDefault();
+          this.startPresentation();
+        } else
+        if (asciiCode == 82 || asciiCode == 114 ) { // r
+          aEvent.preventDefault();
+          this.goRandom();
+        } else {
+          console.debug("onkeypress: got key/charcode "+asciiCode);
+        }
+    }
+
+  }
+
+  /* Need to handle onkeydown for arrows/page up/down, as they are not */
   Dz.onkeydown = function(aEvent) {
     // Don't intercept keyboard shortcuts
     if (aEvent.altKey
@@ -50,25 +103,19 @@
 
     if (!this.html.classList.contains("_edit")) {
 
-        if ( aEvent.keyCode == 37 // left arrow
-          || aEvent.keyCode == 33 // page up
-        ) {
+        if ( aEvent.keyCode == 37 ) { // left arrow
           aEvent.preventDefault();
           this.back();
         } else
-        if ( aEvent.keyCode == 39 // right arrow
-          || aEvent.keyCode == 34 // page down
-        ) {
+        if ( aEvent.keyCode == 39 ) { // right arrow
           aEvent.preventDefault();
           this.forward();
         } else
-        /*if (aEvent.keyCode == 38) { // up arrow*/
-        if (aEvent.keyCode == 173 || aEvent.keyCode == 109 ) { // minus
+        if (aEvent.keyCode == 33 ) { // page up (= plus)
           aEvent.preventDefault();
           this.out();
         } else
-        /*if (aEvent.keyCode == 40) { // down arrow*/
-        if (aEvent.keyCode == 61 || aEvent.keyCode == 107 ) { // plus
+        if (aEvent.keyCode == 34 ) { // page down (= minus)
           aEvent.preventDefault();
           this.in();
         } else
@@ -80,39 +127,12 @@
           aEvent.preventDefault();
           this.goStart();
         } else
-        /*
-        if (aEvent.keyCode == 99999 ) { // ??
-          aEvent.preventDefault();
-          this.toggleContent();
-        } else
-        */
-        if (aEvent.keyCode == 70) { // f
-          aEvent.preventDefault();
-          this.goFullscreen();
-        } else
-        if (aEvent.keyCode == 72) { // h
-          aEvent.preventDefault();
-          this.getHelp();
-        } else
-        if (aEvent.keyCode == 79 || aEvent.keyCode == 48) { // o 0
-          aEvent.preventDefault();
-          this.toggleView();
-        } else
-        if (aEvent.keyCode == 32) { // space
-          aEvent.preventDefault();
-          this.startPresentation();
-        } else
-        if (aEvent.keyCode == 82) { // r
-          aEvent.preventDefault();
-          this.goRandom();
-        } else
         if (aEvent.keyCode == 27) { // escape
           aEvent.preventDefault();
           this.toggleEdit();
         } else {
-          console.debug("Received unused keycode "+aEvent.keyCode);
+          console.debug("onkeydown: got keycode "+aEvent.keyCode);
         }
-
     } else {
 
         if (aEvent.keyCode == 27) { // escape
@@ -123,7 +143,6 @@
         }
 
     }
-
 
   }
 
@@ -192,6 +211,7 @@
         sy = 1200 / window.innerHeight;
         var scale = 1/Math.max(sx, sy);
         var transform = "scale3d(" + scale +","+scale+","+scale+")";
+        window.scrollTo(0,0);
     }
 
     db.style.MozTransform = transform;
@@ -353,6 +373,7 @@
   Dz.toggleView = function() {
     this.html.classList.toggle("_view");
     this.onresize();
+    this.onhashchange(); /* make sure correct slide is highlighted and visible */
   }
 
   Dz.startPresentation = function() {

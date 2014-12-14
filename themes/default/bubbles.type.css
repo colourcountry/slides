@@ -6,10 +6,10 @@
     width: 600px;
     position: absolute;
 
-    background-image: radial-gradient(100px 100px, circle cover, #373 2%, #030 100%);
-    background-image: -o-radial-gradient(100px 100px, circle cover, #030 100%);
-    background-image: -ms-radial-gradient(100px 100px, circle cover, #373 2%, #030 100%);
-    background-image: -moz-radial-gradient(100px 100px, circle cover, #373 2%, #030 100%);
-    background-image: -webkit-radial-gradient(100px 100px, circle cover, #373 2%, #030 100%);
+    background-image: radial-gradient(circle, #373 2%, #030 100%);
+    background-image: -o-radial-gradient(circle, #373 2%, #030 100%);
+    background-image: -ms-radial-gradient(circle, #373 2%, #030 100%);
+    background-image: -moz-radial-gradient(circle, #373 2%, #030 100%);
+    background-image: -webkit-radial-gradient(circle, #373 2%, #030 100%);
 
 }

@@ -62,7 +62,7 @@ Pr.update_save_url = function() {
 
     var baked_cache = {};
     for ( var i in this.cache ) {
-        baked_item = { id: this.cache[i].id };
+        var baked_item = { id: this.cache[i].id };
         if (typeof this.cache[i].c != 'undefined') { baked_item.c = this.cache[i].c };
         if (typeof this.cache[i].n != 'undefined') { baked_item.n = this.cache[i].n };
         if (typeof this.cache[i].s != 'undefined') { baked_item.s = this.cache[i].s };
@@ -501,8 +501,9 @@ Pr.show_editor = function(current_id) {
 Pr.handle_edit_key = function(aEvent) {
 }
 
-init = function() {
+var init = function() {
     Pr.init(Dz);
+    window.onkeypress = Dz.onkeypress.bind(Dz);
     window.onkeydown = Dz.onkeydown.bind(Dz);
     window.onresize = Dz.onresize.bind(Dz);
     window.onhashchange = Dz.onhashchange.bind(Dz);

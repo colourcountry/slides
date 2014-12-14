@@ -117,17 +117,16 @@ Fix slide margins in overview (not sure how that worked)
 Use keys as slide titles if supplied
 Stop loops causing a recursion error
 Allow 0 or O to move to overview mode (just in case)
+Replace buggy editor with simple text area
 ---
 Allow children some control over their parent list item (codeblock, note, warning, etc)
 Disambiguate slide ids arising from loops (doh)
 Allow loopy slides to unroll (not very useful but least surprise)
-Editor doesn't get scroll bar even when visible
 Button to revert last edit session
 Way for tablet people to return to overview
 Way for tablet people to exit editor mode
 Fix nasty .x CSS stuff
 Change URL syntax to store unroll state
-Bug: unroll from editor doesn't work perfectly when adding children -- have to go up and down to fix
 Bug: background colors/images are not aligned to slide
 More help
 Remove item in edit window by removing all content and defocusing
@@ -136,8 +135,6 @@ Visual notification (not alert) when can't download new stuff
 Ipad swipe doesn't work, can't debug on iOS 5
 Bug: left and right arrows should work in text areas without screwing the whole page
 Bug: last slide missing "after" although script tries to add it
-Up and down arrows in edit window work like tab/shift-tab
-Edit type of slides on client (emergency edits only -- ie enter type name manually)
 Reinstate transition
 Work out how to do child-properties neatly (item colour, bar height, etc.) Unrolling grandchildren seems nicest but is it tedious?
 Server can inline *everything* (images, objects) for completely stand-alone presentation
