@@ -362,12 +362,14 @@
   }
 
   Dz.goRandom = function() {
-    var randIdx = this.idx;
-    while (randIdx == this.idx) {
-        var randIdx = Math.floor(Math.random()*this.slides.length) + 1;
+    if (this.slides.length > 1) {
+        var randIdx = this.idx;
+        while (randIdx == this.idx) {
+            var randIdx = Math.floor(Math.random()*this.slides.length) + 1;
+        }
+        console.debug("jump to "+randIdx+" from "+this.idx);
+        this.setCursorByIndex(randIdx, 0);
     }
-    console.debug("jump to "+randIdx+" from "+this.idx);
-    this.setCursorByIndex(randIdx, 0);
   }
 
   Dz.toggleView = function() {
